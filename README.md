@@ -1,5 +1,7 @@
 # mini-app-template
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/dylsteck/mini-app-template)
+
 An opinionated mini app template that makes it as simple as possible to build and launch a mini app on [Base](http://base.org). Built by [dylsteck](https://github.com/dylsteck)
 
 ## Key Features

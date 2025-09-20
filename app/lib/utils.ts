@@ -18,7 +18,24 @@ export const APP_METADATA = {
     baseBuilder: {
         allowedAddresses: ['0x8342A48694A74044116F330db5050a267b28dD85']
     },
-    tags: ['mini app', 'template', 'base', 'dylsteck'],
+    tags: ['miniapp', 'template', 'base', 'dylsteck'],
     noindex: false,
     primaryCategory: 'utility' // One of: games, social, finance, utility, productivity, health-fitness, news-media, music, shopping, education, developer-tools, entertainment, art-creativity
 };
+
+export const fcMiniAppEmbed = (title = 'Launch', imageUrl = APP_METADATA.imageUrl, url = APP_METADATA.url) => {
+    return {
+        version: "next",
+        imageUrl: imageUrl,
+        button: {
+          title: title,
+          action: {
+            type: "launch_frame",
+            name: APP_METADATA.title,
+            url: url,
+            splashImageUrl: APP_METADATA.splash.imageUrl,
+            splashBackgroundColor: APP_METADATA.splash.backgroundColor,
+          },
+        },
+    };
+}
