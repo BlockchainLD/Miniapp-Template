@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { SignInWithBaseButton } from "@base-org/account-ui/react";
 import { useAccount, useConnect, useSignMessage } from "wagmi";
 import { 
@@ -18,6 +18,7 @@ export function SignInForm() {
   const { connectAsync, connectors } = useConnect();
   const { signMessageAsync } = useSignMessage();
   const [isInMiniApp, setIsInMiniApp] = useState(false);
+  const hasAttemptedAuth = useRef(false);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -67,14 +68,23 @@ export function SignInForm() {
 
   // Auto-authenticate when wallet connects but not authenticated
   useEffect(() => {
-    if (isConnected && address && !isAuthenticated && !isLoading) {
+    if (isConnected && address && !isAuthenticated && !isLoading && !hasAttemptedAuth.current) {
       const autoAuthenticate = async () => {
         try {
           console.log('Auto-authenticating with address:', address);
+          hasAttemptedAuth.current = true;
           setIsLoading(true);
-          await performSiweAuth(address, signMessageAsync);
+          
+          // Add timeout to prevent hanging
+          const authPromise = performSiweAuth(address, signMessageAsync);
+          const timeoutPromise = new Promise((_, reject) => 
+            setTimeout(() => reject(new Error('Auto-authentication timeout')), 30000)
+          );
+          
+          await Promise.race([authPromise, timeoutPromise]);
         } catch (error) {
           console.error('Auto-authentication failed:', error);
+          hasAttemptedAuth.current = false; // Reset on failure so user can try again
           setIsLoading(false);
         }
       };
@@ -82,6 +92,13 @@ export function SignInForm() {
       autoAuthenticate();
     }
   }, [isConnected, address, isAuthenticated, isLoading, signMessageAsync]);
+
+  // Reset auth attempt flag when authentication succeeds
+  useEffect(() => {
+    if (isAuthenticated) {
+      hasAttemptedAuth.current = false;
+    }
+  }, [isAuthenticated]);
 
   const handleSiweSignIn = async () => {
     setIsLoading(true);
@@ -98,7 +115,13 @@ export function SignInForm() {
         throw new Error('No wallet address found');
       }
       
-      await performSiweAuth(walletAddress, signMessageAsync);
+      // Add timeout to prevent hanging
+      const authPromise = performSiweAuth(walletAddress, signMessageAsync);
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Authentication timeout')), 30000)
+      );
+      
+      await Promise.race([authPromise, timeoutPromise]);
       
       // Don't set loading to false here - let the useEffect handle it
       // when isAuthenticated becomes true
