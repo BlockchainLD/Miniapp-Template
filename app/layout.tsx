@@ -41,10 +41,16 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <WagmiProvider>
-          <ConvexClientProvider>
-            {children}
-            <Toaster />
-          </ConvexClientProvider>
+          <OnchainKitProvider 
+            chain={base}
+            apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY || "demo"}
+            miniKit={{ enabled: true }}
+          >
+            <ConvexClientProvider>
+              {children}
+              <Toaster />
+            </ConvexClientProvider>
+          </OnchainKitProvider>
         </WagmiProvider>
         
         {/* Farcaster Mini App SDK Ready Signal */}
