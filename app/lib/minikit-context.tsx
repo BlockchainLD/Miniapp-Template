@@ -113,9 +113,9 @@ export function MiniKitProvider({ children }: { children: React.ReactNode }) {
           const miniKitContext: MiniKitContext = {
             user: contextData.user ? {
               fid: contextData.user.fid,
-              username: contextData.user.username,
-              displayName: contextData.user.displayName,
-              pfpUrl: contextData.user.pfpUrl,
+              username: contextData.user.username || '',
+              displayName: contextData.user.displayName || '',
+              pfpUrl: contextData.user.pfpUrl || '',
             } : undefined,
             client: contextData.client ? {
               clientFid: contextData.client.clientFid,
@@ -128,13 +128,13 @@ export function MiniKitProvider({ children }: { children: React.ReactNode }) {
               cast: contextData.location.cast ? {
                 author: {
                   fid: contextData.location.cast.author.fid,
-                  username: contextData.location.cast.author.username,
-                  displayName: contextData.location.cast.author.displayName,
-                  pfpUrl: contextData.location.cast.author.pfpUrl,
+                  username: contextData.location.cast.author.username || '',
+                  displayName: contextData.location.cast.author.displayName || '',
+                  pfpUrl: contextData.location.cast.author.pfpUrl || '',
                 },
-                text: contextData.location.cast.text,
-                timestamp: contextData.location.cast.timestamp,
-                hash: contextData.location.cast.hash,
+                text: contextData.location.cast.text || '',
+                timestamp: contextData.location.cast.timestamp || '',
+                hash: contextData.location.cast.hash || '',
               } : undefined,
             } : undefined,
           };
