@@ -12,7 +12,7 @@ interface ProfileModalProps {
 export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const { address, isConnected } = useAccount();
   const isCustomAuth = isCustomSiweAuthenticated();
-  const customAddress = getCustomSiweAddress();
+  // const customAddress = getCustomSiweAddress(); // Not used
 
   if (!isOpen || !isConnected || !address || !isCustomAuth) {
     return null;

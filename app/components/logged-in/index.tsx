@@ -6,7 +6,7 @@ import { SettingsContent } from "./settings-content";
 import { MobileTabs } from "./mobile-tabs";
 import { CopyNotification } from "./copy-notification";
 import { useLoggedIn } from "./use-logged-in";
-import { SimpleSimpleProfileAvatar } from "../simple-profile-avatar";
+import { SimpleProfileAvatar } from "../simple-profile-avatar";
 import { ProfileModal } from "../profile-modal";
 import { useState } from "react";
 

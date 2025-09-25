@@ -13,7 +13,7 @@ export function SimpleProfileAvatar({ onProfileClick }: SimpleProfileAvatarProps
   const { address, isConnected } = useAccount();
   const [showTooltip, setShowTooltip] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
-  const [authAddress, setAuthAddress] = useState<string | null>(null);
+  // const [authAddress, setAuthAddress] = useState<string | null>(null); // Not used
 
   // Check authentication state
   useEffect(() => {
@@ -21,7 +21,7 @@ export function SimpleProfileAvatar({ onProfileClick }: SimpleProfileAvatarProps
       const auth = isAuthenticated();
       const addr = getAuthenticatedAddress();
       setAuthenticated(auth);
-      setAuthAddress(addr);
+      // setAuthAddress(addr); // Not used
       console.log('SimpleProfileAvatar - Auth check:', { auth, addr, isConnected, address });
     };
 

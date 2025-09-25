@@ -15,7 +15,7 @@ export function SimpleSignInForm() {
   
   const { address, isConnected } = useAccount();
   const { connectAsync, connectors } = useConnect();
-  const { signMessageAsync } = useSignMessage();
+  // const { signMessageAsync } = useSignMessage(); // Not needed for simple auth
 
   // Check if already authenticated
   useEffect(() => {
@@ -133,7 +133,7 @@ export function SimpleSignInForm() {
               🎉 Welcome!
             </Typography>
             <Typography variant="body" className="text-gray-600">
-              You're successfully authenticated
+              You&apos;re successfully authenticated
             </Typography>
             <Typography variant="body" className="text-gray-500 text-sm font-mono">
               {address?.slice(0, 6)}...{address?.slice(-4)}
