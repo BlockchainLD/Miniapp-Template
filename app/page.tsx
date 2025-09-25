@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { MiniKitSignInForm } from "./components/minikit-sign-in-form";
 import { LoggedIn } from "./components/logged-in";
 import { SafeAreaView } from "@worldcoin/mini-apps-ui-kit-react";
@@ -11,9 +12,16 @@ import { useMiniKit, useIsInMiniApp } from "@coinbase/onchainkit/minikit";
 export default function Home() {
   const isMobile = useIsMobile();
   const { isConnected, address } = useAccount();
-  const { context } = useMiniKit();
+  const { context, setFrameReady, isFrameReady } = useMiniKit();
   const { isInMiniApp } = useIsInMiniApp();
   const authenticated = isAuthenticated();
+
+  // Initialize frame readiness as per documentation
+  useEffect(() => {
+    if (!isFrameReady) {
+      setFrameReady();
+    }
+  }, [setFrameReady, isFrameReady]);
 
   // Debug: Add authentication state logging
   console.log('Home component rendering, isMobile:', isMobile);

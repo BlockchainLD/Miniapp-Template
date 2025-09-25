@@ -3,11 +3,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@worldcoin/mini-apps-ui-kit-react/styles.css";
 import { ConvexClientProvider } from "./providers/convex-client-provider";
-import { Provider as WagmiProvider } from './providers/wagmi-provider';
 import { APP_METADATA, fcMiniAppEmbed } from "./lib/utils";
 import { Toaster } from "@worldcoin/mini-apps-ui-kit-react";
-import { OnchainKitProvider } from "@coinbase/onchainkit";
-import { base } from "viem/chains";
+import { OnchainKitProvider } from '@coinbase/onchainkit';
+import { base } from 'wagmi/chains';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,18 +39,26 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <WagmiProvider>
-          <OnchainKitProvider 
-            chain={base}
-            apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY || "demo"}
-            miniKit={{ enabled: true }}
-          >
-            <ConvexClientProvider>
-              {children}
-              <Toaster />
-            </ConvexClientProvider>
-          </OnchainKitProvider>
-        </WagmiProvider>
+        <OnchainKitProvider
+          apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY || "demo"}
+          chain={base}
+          config={{
+            appearance: {
+              mode: 'auto',
+              theme: 'default',
+              name: APP_METADATA.title,
+              logo: APP_METADATA.splash.imageUrl,
+            },
+          }}
+          miniKit={{
+            enabled: true
+          }}
+        >
+          <ConvexClientProvider>
+            {children}
+            <Toaster />
+          </ConvexClientProvider>
+        </OnchainKitProvider>
         
         {/* Farcaster Mini App SDK Ready Signal */}
         <script type="module" dangerouslySetInnerHTML={{
