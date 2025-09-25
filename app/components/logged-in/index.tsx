@@ -6,8 +6,8 @@ import { SettingsContent } from "./settings-content";
 import { MobileTabs } from "./mobile-tabs";
 import { CopyNotification } from "./copy-notification";
 import { useLoggedIn } from "./use-logged-in";
-import { SimpleProfileAvatar } from "../simple-profile-avatar";
-import { SimpleProfileModal } from "../simple-profile-modal";
+import { OnchainKitProfileAvatar } from "../onchainkit-profile-avatar";
+import { OnchainKitProfileModal } from "../onchainkit-profile-modal";
 import { useState } from "react";
 
 export const LoggedIn = () => {
@@ -24,7 +24,7 @@ export const LoggedIn = () => {
   } = useLoggedIn();
   
   const isMobile = useIsMobile();
-  const [isSimpleProfileModalOpen, setIsSimpleProfileModalOpen] = useState(false);
+  const [isOnchainKitProfileModalOpen, setIsOnchainKitProfileModalOpen] = useState(false);
 
   if (isMobile) {
     return (
@@ -36,7 +36,7 @@ export const LoggedIn = () => {
               className="[&_*]:text-black"
             />
             <div className="absolute top-4 right-4 z-10">
-              <SimpleProfileAvatar onProfileClick={() => setIsSimpleProfileModalOpen(true)} />
+              <OnchainKitProfileAvatar onProfileClick={() => setIsOnchainKitProfileModalOpen(true)} />
             </div>
           </div>
           <div className="px-6 pt-0.5 pb-3">
@@ -63,9 +63,9 @@ export const LoggedIn = () => {
 
         <MobileTabs activeTab={activeTab} onTabChange={setActiveTab} />
         <CopyNotification show={copied} isMobile />
-        <SimpleProfileModal 
-          isOpen={isSimpleProfileModalOpen} 
-          onClose={() => setIsSimpleProfileModalOpen(false)} 
+        <OnchainKitProfileModal 
+          isOpen={isOnchainKitProfileModalOpen} 
+          onClose={() => setIsOnchainKitProfileModalOpen(false)} 
         />
       </>
     );
@@ -80,7 +80,7 @@ export const LoggedIn = () => {
             className="[&_*]:text-black"
           />
           <div className="absolute top-4 right-4 z-10">
-            <SimpleProfileAvatar onProfileClick={() => setIsSimpleProfileModalOpen(true)} />
+            <OnchainKitProfileAvatar onProfileClick={() => setIsOnchainKitProfileModalOpen(true)} />
           </div>
         </div>
         <div className="px-6 pt-0.5 pb-3">
@@ -100,9 +100,9 @@ export const LoggedIn = () => {
       </div>
 
       <CopyNotification show={copied} />
-      <SimpleProfileModal 
-        isOpen={isSimpleProfileModalOpen} 
-        onClose={() => setIsSimpleProfileModalOpen(false)} 
+      <OnchainKitProfileModal 
+        isOpen={isOnchainKitProfileModalOpen} 
+        onClose={() => setIsOnchainKitProfileModalOpen(false)} 
       />
     </>
   );
