@@ -14,6 +14,7 @@ import { sdk } from '@farcaster/miniapp-sdk';
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [authState, setAuthState] = useState<'idle' | 'connecting' | 'authenticating' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string>('');
   const { isAuthenticated } = useConvexAuth();
   const { address, isConnected } = useAccount();
   const { connectAsync, connectors } = useConnect();
@@ -118,6 +119,14 @@ export function SignInForm() {
           
         } catch (error) {
           console.error('Auto-authentication failed:', error);
+          console.error('Error details:', {
+            message: error instanceof Error ? error.message : 'Unknown error',
+            stack: error instanceof Error ? error.stack : undefined,
+            error: error
+          });
+          
+          const errorMsg = error instanceof Error ? error.message : 'Authentication failed';
+          setErrorMessage(errorMsg);
           setAuthState('error');
           setIsLoading(false);
           hasAttemptedAuth.current = false;
@@ -212,9 +221,15 @@ export function SignInForm() {
                        <Typography variant="body" className="text-red-600">
                          ❌ Authentication failed
                        </Typography>
+                       {errorMessage && (
+                         <div className="text-xs text-red-500 bg-red-50 p-2 rounded border">
+                           Error: {errorMessage}
+                         </div>
+                       )}
                        <button
                          onClick={() => {
                            setAuthState('idle');
+                           setErrorMessage('');
                            hasAttemptedAuth.current = false;
                          }}
                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

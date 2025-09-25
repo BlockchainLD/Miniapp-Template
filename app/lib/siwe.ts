@@ -9,15 +9,21 @@ export const performSiweAuth = async (
   try {
     console.log('Starting SIWE authentication for address:', walletAddress);
     
-    const nonceResponse = await authClient.siwe.nonce({
-      walletAddress,
-      chainId: base.id,
-    });
+    let nonceResponse;
+    try {
+      nonceResponse = await authClient.siwe.nonce({
+        walletAddress,
+        chainId: base.id,
+      });
+    } catch (nonceError) {
+      console.error('Failed to get nonce:', nonceError);
+      throw new Error(`Network error getting nonce: ${nonceError instanceof Error ? nonceError.message : 'Unknown error'}`);
+    }
     
     console.log('Nonce response:', nonceResponse);
     
     if (!nonceResponse?.data?.nonce) {
-      throw new Error('Failed to get nonce from server');
+      throw new Error('Failed to get nonce from server - response was empty');
     }
     
     // Use the same domain logic as the server
@@ -40,20 +46,32 @@ export const performSiweAuth = async (
     const message = siweMessage.prepareMessage();
     console.log('SIWE message prepared:', message);
     
-    const signature = await signMessageAsync({ message });
-    console.log('Message signed, signature length:', signature.length);
+    let signature;
+    try {
+      signature = await signMessageAsync({ message });
+      console.log('Message signed, signature length:', signature.length);
+    } catch (signError) {
+      console.error('Failed to sign message:', signError);
+      throw new Error(`Failed to sign message: ${signError instanceof Error ? signError.message : 'User rejected or error occurred'}`);
+    }
 
-    const verifyResponse = await authClient.siwe.verify({
-      message,
-      signature,
-      walletAddress,
-      chainId: base.id,
-    });
+    let verifyResponse;
+    try {
+      verifyResponse = await authClient.siwe.verify({
+        message,
+        signature,
+        walletAddress,
+        chainId: base.id,
+      });
+    } catch (verifyError) {
+      console.error('Failed to verify signature:', verifyError);
+      throw new Error(`Network error verifying signature: ${verifyError instanceof Error ? verifyError.message : 'Unknown error'}`);
+    }
     
     console.log('SIWE verification response:', verifyResponse);
     
     if (!verifyResponse?.data?.success) {
-      throw new Error('SIWE verification failed');
+      throw new Error(`SIWE verification failed: ${verifyResponse?.data?.error || 'Server rejected the signature'}`);
     }
     
     console.log('SIWE authentication completed successfully');
