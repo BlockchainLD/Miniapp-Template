@@ -3,6 +3,13 @@ import { convexClient } from "@convex-dev/better-auth/client/plugins";
 import { siweClient } from "better-auth/client/plugins";
 
 const getBaseURL = () => {
+  // Use Convex HTTP routes directly instead of Next.js API routes
+  const convexUrl = process.env.NEXT_PUBLIC_CONVEX_SITE_URL || process.env.NEXT_PUBLIC_CONVEX_URL;
+  if (convexUrl) {
+    console.log('Auth client using Convex URL:', convexUrl);
+    return convexUrl;
+  }
+  
   if (typeof window !== 'undefined') {
     console.log('Auth client using window.location.origin:', window.location.origin);
     return window.location.origin;
