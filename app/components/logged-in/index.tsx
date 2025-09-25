@@ -6,10 +6,9 @@ import { SettingsContent } from "./settings-content";
 import { MobileTabs } from "./mobile-tabs";
 import { CopyNotification } from "./copy-notification";
 import { useLoggedIn } from "./use-logged-in";
-import { ProfileAvatar } from "../profile-avatar";
+import { SimpleSimpleProfileAvatar } from "../simple-profile-avatar";
 import { ProfileModal } from "../profile-modal";
 import { useState } from "react";
-import { isCustomSiweAuthenticated, getCustomSiweAddress } from "../../lib/custom-siwe";
 
 export const LoggedIn = () => {
   const {
@@ -26,11 +25,6 @@ export const LoggedIn = () => {
   
   const isMobile = useIsMobile();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
-  
-  // Debug: Check authentication state
-  const isCustomAuth = isCustomSiweAuthenticated();
-  const customAddress = getCustomSiweAddress();
-  console.log('LoggedIn - Custom Auth State:', { isCustomAuth, customAddress });
 
   if (isMobile) {
     return (
@@ -42,7 +36,7 @@ export const LoggedIn = () => {
               className="[&_*]:text-black"
             />
             <div className="absolute top-4 right-4 z-10">
-              <ProfileAvatar onProfileClick={() => setIsProfileModalOpen(true)} />
+              <SimpleProfileAvatar onProfileClick={() => setIsProfileModalOpen(true)} />
             </div>
           </div>
           <div className="px-6 pt-0.5 pb-3">
@@ -86,7 +80,7 @@ export const LoggedIn = () => {
             className="[&_*]:text-black"
           />
           <div className="absolute top-4 right-4 z-10">
-            <ProfileAvatar onProfileClick={() => setIsProfileModalOpen(true)} />
+            <SimpleProfileAvatar onProfileClick={() => setIsProfileModalOpen(true)} />
           </div>
         </div>
         <div className="px-6 pt-0.5 pb-3">
