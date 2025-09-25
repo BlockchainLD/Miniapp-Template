@@ -14,7 +14,7 @@ interface SimpleProfileModalProps {
 export function SimpleProfileModal({ isOpen, onClose }: SimpleProfileModalProps) {
   const { address, isConnected } = useAccount();
   const [authenticated, setAuthenticated] = useState(false);
-  const [authAddress, setAuthAddress] = useState<string | null>(null);
+  // const [authAddress, setAuthAddress] = useState<string | null>(null); // Not used
   const [farcasterData, setFarcasterData] = useState<FarcasterUserData | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -24,7 +24,7 @@ export function SimpleProfileModal({ isOpen, onClose }: SimpleProfileModalProps)
       const auth = isAuthenticated();
       const addr = getAuthenticatedAddress();
       setAuthenticated(auth);
-      setAuthAddress(addr);
+      // setAuthAddress(addr); // Not used
       console.log('SimpleProfileModal - Auth check:', { auth, addr, isConnected, address });
     };
 

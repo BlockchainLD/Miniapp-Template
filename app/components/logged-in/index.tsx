@@ -7,7 +7,7 @@ import { MobileTabs } from "./mobile-tabs";
 import { CopyNotification } from "./copy-notification";
 import { useLoggedIn } from "./use-logged-in";
 import { SimpleProfileAvatar } from "../simple-profile-avatar";
-import { SimpleSimpleProfileModal } from "../simple-profile-modal";
+import { SimpleProfileModal } from "../simple-profile-modal";
 import { useState } from "react";
 
 export const LoggedIn = () => {

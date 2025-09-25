@@ -54,15 +54,15 @@ export const fetchRealFarcasterData = async (address: string): Promise<Farcaster
   }
 };
 
-// Transform Farcaster API response to our format
-const transformFarcasterData = (apiData: any): FarcasterUserData => {
-  return {
-    username: apiData.username || "unknown",
-    fid: `#${apiData.fid || "00000"}`,
-    followers: apiData.follower_count?.toString() || "0",
-    following: apiData.following_count?.toString() || "0",
-    bio: apiData.profile?.bio?.text || "No bio available",
-    displayName: apiData.display_name || apiData.username,
-    pfpUrl: apiData.pfp_url
-  };
-};
+// Transform Farcaster API response to our format (for future use)
+// const transformFarcasterData = (apiData: Record<string, unknown>): FarcasterUserData => {
+//   return {
+//     username: (apiData.username as string) || "unknown",
+//     fid: `#${(apiData.fid as number) || "00000"}`,
+//     followers: (apiData.follower_count as number)?.toString() || "0",
+//     following: (apiData.following_count as number)?.toString() || "0",
+//     bio: (apiData.profile as Record<string, unknown>)?.bio?.text as string || "No bio available",
+//     displayName: (apiData.display_name as string) || (apiData.username as string),
+//     pfpUrl: apiData.pfp_url as string
+//   };
+// };
