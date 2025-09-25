@@ -26,7 +26,7 @@ export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarPro
         auth, 
         isConnected, 
         address, 
-        isInMiniApp: context?.isInMiniApp 
+        isInMiniApp: context?.client 
       });
     };
 
@@ -41,7 +41,7 @@ export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarPro
 
     window.addEventListener('auth_state_changed', handleAuthChange);
     return () => window.removeEventListener('auth_state_changed', handleAuthChange);
-  }, [isConnected, address, context?.isInMiniApp]);
+  }, [isConnected, address, context?.client]);
 
   // Only show if connected and authenticated
   if (!isConnected || !address || !authenticated) {
@@ -70,7 +70,7 @@ export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarPro
         <div className="absolute top-12 right-0 bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg z-50 whitespace-nowrap">
           <div className="text-xs">
             Click to view profile
-            {context?.isInMiniApp && (
+            {context?.client && (
               <div className="text-blue-400 mt-1">✨ Mini App</div>
             )}
           </div>

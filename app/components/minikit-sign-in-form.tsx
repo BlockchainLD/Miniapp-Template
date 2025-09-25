@@ -35,7 +35,7 @@ export function MiniKitSignInForm() {
   // Auto-connect for Mini App users
   useEffect(() => {
     const handleAutoConnect = async () => {
-      if (context?.isInMiniApp && !isConnected && authState === 'idle' && !isAuthenticated()) {
+      if (context?.client && !isConnected && authState === 'idle' && !isAuthenticated()) {
         try {
           console.log('Starting auto-connect in Mini App via MiniKit');
           setAuthState('connecting');
@@ -59,7 +59,7 @@ export function MiniKitSignInForm() {
     };
 
     handleAutoConnect();
-  }, [context?.isInMiniApp, isConnected, authState, connectAsync, connectors]);
+  }, [context?.client, isConnected, authState, connectAsync, connectors]);
 
   // Auto-authenticate when connected using MiniKit
   useEffect(() => {
@@ -144,7 +144,7 @@ export function MiniKitSignInForm() {
             <Typography variant="body" className="text-gray-500 text-sm font-mono">
               {address?.slice(0, 6)}...{address?.slice(-4)}
             </Typography>
-            {context?.isInMiniApp && (
+            {context?.client && (
               <Typography variant="body" className="text-blue-600 text-xs">
                 ✨ Mini App Mode Active
               </Typography>
@@ -165,7 +165,7 @@ export function MiniKitSignInForm() {
           <Typography variant="body" className="text-gray-600">
             Connect your wallet to continue
           </Typography>
-          {context?.isInMiniApp && (
+          {context?.client && (
             <Typography variant="body" className="text-blue-600 text-xs">
               🚀 Mini App Environment Detected
             </Typography>
@@ -174,7 +174,7 @@ export function MiniKitSignInForm() {
       </div>
       
       <div className="space-y-4">
-        {context?.isInMiniApp ? (
+        {context?.client ? (
           // Mini App users: Show detailed auth state
           <div className="text-center py-4 space-y-3">
             <div className="text-xs text-gray-500 mb-2">

@@ -31,7 +31,7 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
         auth, 
         isConnected, 
         address, 
-        isInMiniApp: context?.isInMiniApp 
+        isInMiniApp: context?.client 
       });
     };
 
@@ -46,7 +46,7 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
 
     window.addEventListener('auth_state_changed', handleAuthChange);
     return () => window.removeEventListener('auth_state_changed', handleAuthChange);
-  }, [isConnected, address, context?.isInMiniApp]);
+  }, [isConnected, address, context?.client]);
 
   // Load real Farcaster data when modal opens
   useEffect(() => {
@@ -77,7 +77,7 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
         <div className="flex items-center justify-between">
           <Typography variant="heading" className="text-gray-900">
             Profile
-            {context?.isInMiniApp && (
+            {context?.client && (
               <span className="ml-2 text-blue-600 text-sm">✨ Mini App</span>
             )}
           </Typography>
