@@ -12,7 +12,6 @@ export const performSiweAuth = async (
     let nonceResponse;
     try {
       console.log('Requesting nonce with:', { walletAddress, chainId: base.id });
-      console.log('Auth client base URL:', authClient.baseURL);
       
       nonceResponse = await authClient.siwe.nonce({
         walletAddress,
