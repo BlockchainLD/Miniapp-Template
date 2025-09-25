@@ -70,6 +70,9 @@ NEXT_PUBLIC_CONVEX_SITE_URL=
 
 # World App ID (optional)
 NEXT_PUBLIC_WORLD_APP_ID=app_123456789
+
+# Farcaster API Configuration (for real user data)
+NEXT_PUBLIC_NEYNAR_API_KEY=your_neynar_api_key_here
 ```
 
 #### Generate Better Auth Secret
@@ -77,6 +80,15 @@ NEXT_PUBLIC_WORLD_APP_ID=app_123456789
 ```bash
 bunx @better-auth/cli@latest secret
 ```
+
+#### Get Neynar API Key (for real Farcaster data)
+
+1. Visit [Neynar API](https://neynar.com/)
+2. Sign up for a free account
+3. Get your API key from the dashboard
+4. Add it to your environment variables as `NEXT_PUBLIC_NEYNAR_API_KEY`
+
+**Note:** Without the Neynar API key, the app will use mock Farcaster data.
 
 ### 3. Convex Setup
 
@@ -144,6 +156,7 @@ Visit `http://localhost:3000` to see your mini app!
    NEXT_PUBLIC_CONVEX_URL=https://your-convex-deployment.convex.cloud
    NEXT_PUBLIC_CONVEX_SITE_URL=https://your-convex-deployment.convex.cloud
    NEXT_PUBLIC_WORLD_APP_ID=app_123456789
+   NEXT_PUBLIC_NEYNAR_API_KEY=your_neynar_api_key_here
    ```
 
 4. **Update Convex Configuration:**

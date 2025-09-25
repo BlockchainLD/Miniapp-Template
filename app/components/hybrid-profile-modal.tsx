@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { isAuthenticated, signOut } from "../lib/simple-auth";
+import { fetchFarcasterDataByAddress, FarcasterUserData } from "../lib/farcaster-api";
 import { Typography, Button } from "@worldcoin/mini-apps-ui-kit-react";
 
 interface HybridProfileModalProps {
@@ -13,6 +14,9 @@ interface HybridProfileModalProps {
 export function HybridProfileModal({ isOpen, onClose }: HybridProfileModalProps) {
   const { address, isConnected } = useAccount();
   const [authenticated, setAuthenticated] = useState(false);
+  const [farcasterData, setFarcasterData] = useState<FarcasterUserData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
 
   // Check authentication state
   useEffect(() => {
@@ -34,6 +38,21 @@ export function HybridProfileModal({ isOpen, onClose }: HybridProfileModalProps)
     window.addEventListener('auth_state_changed', handleAuthChange);
     return () => window.removeEventListener('auth_state_changed', handleAuthChange);
   }, [isConnected, address]);
+
+  // Load real Farcaster data when modal opens
+  useEffect(() => {
+    if (isOpen && authenticated && address) {
+      setLoading(true);
+      fetchFarcasterDataByAddress(address).then((data) => {
+        setFarcasterData(data);
+        setIsVerified(data?.verifiedAddresses?.includes(address.toLowerCase()) || false);
+        setLoading(false);
+      }).catch((error) => {
+        console.error('Failed to load Farcaster data:', error);
+        setLoading(false);
+      });
+    }
+  }, [isOpen, authenticated, address]);
 
   if (!isOpen || !isConnected || !address || !authenticated) {
     return null;
@@ -77,12 +96,14 @@ export function HybridProfileModal({ isOpen, onClose }: HybridProfileModalProps)
             <div className="text-center space-y-2">
               <div className="flex items-center justify-center space-x-2">
                 <Typography variant="heading" className="text-xl font-semibold text-gray-900">
-                  Farcaster User
+                  {farcasterData?.displayName || "Farcaster User"}
                 </Typography>
-                <div className="flex items-center space-x-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                  <span className="text-xs text-green-600 font-medium">Verified</span>
-                </div>
+                {isVerified && (
+                  <div className="flex items-center space-x-1">
+                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                    <span className="text-xs text-green-600 font-medium">Verified</span>
+                  </div>
+                )}
               </div>
               
               <Typography variant="body" className="text-sm text-gray-500 font-mono">
@@ -98,54 +119,69 @@ export function HybridProfileModal({ isOpen, onClose }: HybridProfileModalProps)
                 Farcaster Data
               </Typography>
               
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <Typography variant="body" className="text-gray-600">
-                    Username:
-                  </Typography>
-                  <Typography variant="body" className="text-gray-900 font-medium">
-                    @base_builder
+              {loading ? (
+                <div className="flex items-center justify-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+                  <Typography variant="body" className="text-gray-600 ml-2">
+                    Loading Farcaster data...
                   </Typography>
                 </div>
-                
-                <div className="flex justify-between items-center">
-                  <Typography variant="body" className="text-gray-600">
-                    FID:
-                  </Typography>
-                  <Typography variant="body" className="text-gray-900 font-medium">
-                    #12345
-                  </Typography>
+              ) : farcasterData ? (
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <Typography variant="body" className="text-gray-600">
+                      Username:
+                    </Typography>
+                    <Typography variant="body" className="text-gray-900 font-medium">
+                      @{farcasterData.username}
+                    </Typography>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <Typography variant="body" className="text-gray-600">
+                      FID:
+                    </Typography>
+                    <Typography variant="body" className="text-gray-900 font-medium">
+                      {farcasterData.fid}
+                    </Typography>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <Typography variant="body" className="text-gray-600">
+                      Followers:
+                    </Typography>
+                    <Typography variant="body" className="text-gray-900 font-medium">
+                      {farcasterData.followers}
+                    </Typography>
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <Typography variant="body" className="text-gray-600">
+                      Following:
+                    </Typography>
+                    <Typography variant="body" className="text-gray-900 font-medium">
+                      {farcasterData.following}
+                    </Typography>
+                  </div>
                 </div>
-                
-                <div className="flex justify-between items-center">
-                  <Typography variant="body" className="text-gray-600">
-                    Followers:
-                  </Typography>
-                  <Typography variant="body" className="text-gray-900 font-medium">
-                    1,234
-                  </Typography>
-                </div>
-                
-                <div className="flex justify-between items-center">
-                  <Typography variant="body" className="text-gray-600">
-                    Following:
-                  </Typography>
-                  <Typography variant="body" className="text-gray-900 font-medium">
-                    567
-                  </Typography>
-                </div>
-              </div>
+              ) : (
+                <Typography variant="body" className="text-gray-500">
+                  No Farcaster data available
+                </Typography>
+              )}
             </div>
 
             {/* Bio */}
-            <div className="bg-gray-50 rounded-2xl p-4">
-              <Typography variant="heading" className="text-gray-900 text-lg mb-2">
-                Bio
-              </Typography>
-              <Typography variant="body" className="text-gray-600">
-                Building the future of decentralized social media on Base! 🚀
-              </Typography>
-            </div>
+            {farcasterData && (
+              <div className="bg-gray-50 rounded-2xl p-4">
+                <Typography variant="heading" className="text-gray-900 text-lg mb-2">
+                  Bio
+                </Typography>
+                <Typography variant="body" className="text-gray-600">
+                  {farcasterData.bio}
+                </Typography>
+              </div>
+            )}
           </div>
 
           {/* Actions */}
