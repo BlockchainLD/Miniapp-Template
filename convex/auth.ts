@@ -29,6 +29,14 @@ export const createAuth = (
   ctx: GenericCtx<DataModel>,
   { optionsOnly } = { optionsOnly: false },
 ) => {
+  console.log('Creating auth with siteUrl:', siteUrl);
+  console.log('SITE_URL env var:', process.env.SITE_URL);
+  console.log('Trusted origins:', [
+    "http://localhost:3000",
+    "https://mini-app-template-two.vercel.app",
+    ...(process.env.SITE_URL ? [process.env.SITE_URL] : [])
+  ]);
+  
   return betterAuth({
     logger: {
       disabled: optionsOnly,
@@ -49,7 +57,9 @@ export const createAuth = (
         domain: process.env.SITE_URL ? new URL(process.env.SITE_URL).hostname : "localhost:3000",
         anonymous: true,
         getNonce: async () => {
-          return crypto.randomUUID().replace(/-/g, '');
+          const nonce = crypto.randomUUID().replace(/-/g, '');
+          console.log('Generated nonce:', nonce);
+          return nonce;
         },
         verifyMessage: async ({ message, signature, address }) => {
           return await publicClient.verifyMessage({

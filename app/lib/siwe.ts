@@ -11,12 +11,22 @@ export const performSiweAuth = async (
     
     let nonceResponse;
     try {
+      console.log('Requesting nonce with:', { walletAddress, chainId: base.id });
+      console.log('Auth client base URL:', authClient.baseURL);
+      
       nonceResponse = await authClient.siwe.nonce({
         walletAddress,
         chainId: base.id,
       });
+      
+      console.log('Raw nonce response:', nonceResponse);
     } catch (nonceError) {
       console.error('Failed to get nonce:', nonceError);
+      console.error('Nonce error details:', {
+        message: nonceError instanceof Error ? nonceError.message : 'Unknown error',
+        stack: nonceError instanceof Error ? nonceError.stack : undefined,
+        error: nonceError
+      });
       throw new Error(`Network error getting nonce: ${nonceError instanceof Error ? nonceError.message : 'Unknown error'}`);
     }
     
