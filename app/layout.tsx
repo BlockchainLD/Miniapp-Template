@@ -2,11 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@worldcoin/mini-apps-ui-kit-react/styles.css";
-import { ConvexClientProvider } from "./providers/convex-client-provider";
+import "@coinbase/onchainkit/styles.css";
 import { APP_METADATA, fcMiniAppEmbed } from "./lib/utils";
 import { Toaster } from "@worldcoin/mini-apps-ui-kit-react";
-import { OnchainKitProvider } from '@coinbase/onchainkit';
-import { base } from 'wagmi/chains';
+import { RootProvider } from "./providers/root-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,26 +38,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <OnchainKitProvider
-          apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY || "demo"}
-          chain={base}
-          config={{
-            appearance: {
-              mode: 'auto',
-              theme: 'default',
-              name: APP_METADATA.title,
-              logo: APP_METADATA.splash.imageUrl,
-            },
-          }}
-          miniKit={{
-            enabled: true
-          }}
-        >
-          <ConvexClientProvider>
-            {children}
-            <Toaster />
-          </ConvexClientProvider>
-        </OnchainKitProvider>
+        <RootProvider>
+          {children}
+          <Toaster />
+        </RootProvider>
         
         {/* Farcaster Mini App SDK Ready Signal */}
         <script type="module" dangerouslySetInnerHTML={{
