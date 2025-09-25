@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { useMiniKit, useAuthenticate, useIsInMiniApp } from "../lib/minikit-context";
+import { useMiniKit, useAuthenticate, useIsInMiniApp } from "@coinbase/onchainkit/minikit";
 import { Avatar, Identity, Name, Badge, Address } from "@coinbase/onchainkit/identity";
 import { isAuthenticated, signOut } from "../lib/simple-auth";
 import { fetchFarcasterDataByAddress, FarcasterUserData } from "../lib/farcaster-api";

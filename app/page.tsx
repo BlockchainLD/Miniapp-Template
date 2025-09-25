@@ -6,7 +6,7 @@ import { SafeAreaView } from "@worldcoin/mini-apps-ui-kit-react";
 import { useIsMobile } from "./hooks/use-is-mobile";
 import { useAccount } from "wagmi";
 import { isAuthenticated } from "./lib/simple-auth";
-import { useMiniKit, useIsInMiniApp } from "./lib/minikit-context";
+import { useMiniKit, useIsInMiniApp } from "@coinbase/onchainkit/minikit";
 
 export default function Home() {
   const isMobile = useIsMobile();

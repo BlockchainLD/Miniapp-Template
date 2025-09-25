@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useMiniKit, useAuthenticate, useIsInMiniApp } from "../lib/minikit-context";
+import { useMiniKit, useAuthenticate, useIsInMiniApp } from "@coinbase/onchainkit/minikit";
 import { SignInWithBaseButton } from "@base-org/account-ui/react";
 import { useAccount, useConnect } from "wagmi";
 import { Typography, Spinner } from "@worldcoin/mini-apps-ui-kit-react";
