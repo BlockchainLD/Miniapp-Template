@@ -44,6 +44,11 @@ export const performCustomSiweAuth = async (
     localStorage.setItem('siwe_address', walletAddress);
     localStorage.setItem('siwe_signature', signature);
     
+    // Dispatch a custom event to notify components of authentication success
+    window.dispatchEvent(new CustomEvent('siwe_authenticated', { 
+      detail: { address: walletAddress, signature } 
+    }));
+    
   } catch (error) {
     console.error('Custom SIWE authentication error:', error);
     throw error;

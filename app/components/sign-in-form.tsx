@@ -8,7 +8,7 @@ import {
   Spinner
 } from "@worldcoin/mini-apps-ui-kit-react";
 import { useConvexAuth } from "convex/react";
-import { performCustomSiweAuth } from "../lib/custom-siwe";
+import { performCustomSiweAuth, isCustomSiweAuthenticated } from "../lib/custom-siwe";
 import { sdk } from '@farcaster/miniapp-sdk';
 
 export function SignInForm() {
@@ -32,14 +32,27 @@ export function SignInForm() {
     };
   }, []);
 
-  // Reset loading state when authenticated
+  // Reset loading state when authenticated (either Convex or custom SIWE)
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated || isCustomSiweAuthenticated()) {
       setIsLoading(false);
       setAuthState('success');
       hasAttemptedAuth.current = false;
     }
   }, [isAuthenticated]);
+
+  // Listen for custom SIWE authentication events
+  useEffect(() => {
+    const handleSiweAuth = () => {
+      console.log('Custom SIWE authentication event received');
+      setIsLoading(false);
+      setAuthState('success');
+      hasAttemptedAuth.current = false;
+    };
+
+    window.addEventListener('siwe_authenticated', handleSiweAuth);
+    return () => window.removeEventListener('siwe_authenticated', handleSiweAuth);
+  }, []);
 
   // Detect if we're in a Mini App
   useEffect(() => {
@@ -93,8 +106,8 @@ export function SignInForm() {
         return;
       }
 
-      // If connected but not authenticated, authenticate
-      if (isConnected && address && !isAuthenticated && authState === 'idle') {
+      // If connected but not authenticated, authenticate (only if not already custom authenticated)
+      if (isConnected && address && !isAuthenticated && !isCustomSiweAuthenticated() && authState === 'idle') {
         try {
           console.log('Starting auto-authentication with address:', address);
           hasAttemptedAuth.current = true;
@@ -144,10 +157,10 @@ export function SignInForm() {
 
   const handleSiweSignIn = async () => {
     setIsLoading(true);
-    
+
     try {
       let walletAddress = address;
-      
+
       if (!isConnected || !walletAddress) {
         const result = await connectAsync({ connector: connectors[0] });
         walletAddress = result.accounts[0];
@@ -157,16 +170,16 @@ export function SignInForm() {
         throw new Error('No wallet address found');
       }
       
-             // Add timeout to prevent hanging
-             const authPromise = performCustomSiweAuth(walletAddress, signMessageAsync);
+      // Add timeout to prevent hanging
+      const authPromise = performCustomSiweAuth(walletAddress, signMessageAsync);
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Authentication timeout')), 30000)
       );
       
       await Promise.race([authPromise, timeoutPromise]);
-      
+
       // Don't set loading to false here - let the useEffect handle it
-      // when isAuthenticated becomes true
+      // when custom SIWE authentication event is received
     } catch (error) {
       console.error('Authentication error:', error);
       setIsLoading(false);
@@ -193,7 +206,7 @@ export function SignInForm() {
                      State: {authState} | Connected: {isConnected ? '✅' : '❌'} | Auth: {isAuthenticated ? '✅' : '❌'}
                    </div>
                    
-                   {authState === 'success' || isAuthenticated ? (
+                   {authState === 'success' || isAuthenticated || isCustomSiweAuthenticated() ? (
                      <div>
                        <Typography variant="body" className="text-green-600">
                          🎉 Fully authenticated in Mini App!
