@@ -8,7 +8,7 @@ import {
   Spinner
 } from "@worldcoin/mini-apps-ui-kit-react";
 import { useConvexAuth } from "convex/react";
-import { performSiweAuth } from "../lib/siwe";
+import { performCustomSiweAuth } from "../lib/custom-siwe";
 import { sdk } from '@farcaster/miniapp-sdk';
 
 export function SignInForm() {
@@ -109,7 +109,7 @@ export function SignInForm() {
             hasAttemptedAuth.current = false;
           }, 30000);
           
-          await performSiweAuth(address, signMessageAsync);
+                 await performCustomSiweAuth(address, signMessageAsync);
           
           // Clear timeout on success
           if (authTimeoutRef.current) {
@@ -157,8 +157,8 @@ export function SignInForm() {
         throw new Error('No wallet address found');
       }
       
-      // Add timeout to prevent hanging
-      const authPromise = performSiweAuth(walletAddress, signMessageAsync);
+             // Add timeout to prevent hanging
+             const authPromise = performCustomSiweAuth(walletAddress, signMessageAsync);
       const timeoutPromise = new Promise((_, reject) => 
         setTimeout(() => reject(new Error('Authentication timeout')), 30000)
       );

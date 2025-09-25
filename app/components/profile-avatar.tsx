@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useAccount } from "wagmi";
+import { isCustomSiweAuthenticated, getCustomSiweAddress } from "../lib/custom-siwe";
 import { Typography } from "@worldcoin/mini-apps-ui-kit-react";
 
 interface ProfileAvatarProps {
@@ -12,11 +13,16 @@ export function ProfileAvatar({ onProfileClick }: ProfileAvatarProps) {
   const { address, isConnected } = useAccount();
   const [showTooltip, setShowTooltip] = useState(false);
 
+  // Check both Wagmi connection and custom SIWE authentication
+  const isCustomAuth = isCustomSiweAuthenticated();
+  const customAddress = getCustomSiweAddress();
+  
   // Debug logging
   console.log('ProfileAvatar - isConnected:', isConnected, 'address:', address);
+  console.log('ProfileAvatar - isCustomAuth:', isCustomAuth, 'customAddress:', customAddress);
 
-  if (!isConnected || !address) {
-    console.log('ProfileAvatar - Not rendering: not connected or no address');
+  if (!isConnected || !address || !isCustomAuth) {
+    console.log('ProfileAvatar - Not rendering: not connected, no address, or not authenticated');
     return null;
   }
 
