@@ -1,7 +1,7 @@
 "use client";
 
 import { useAccount } from "wagmi";
-import { isCustomSiweAuthenticated, getCustomSiweAddress } from "../lib/custom-siwe";
+import { isCustomSiweAuthenticated } from "../lib/custom-siwe";
 import { Typography, Button } from "@worldcoin/mini-apps-ui-kit-react";
 
 interface ProfileModalProps {

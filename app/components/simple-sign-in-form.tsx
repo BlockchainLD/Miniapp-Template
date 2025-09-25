@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { SignInWithBaseButton } from "@base-org/account-ui/react";
-import { useAccount, useConnect, useSignMessage } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import { Typography, Spinner } from "@worldcoin/mini-apps-ui-kit-react";
 import { sdk } from '@farcaster/miniapp-sdk';
 import { setAuthenticated, isAuthenticated } from "../lib/simple-auth";

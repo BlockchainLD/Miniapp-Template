@@ -1,5 +1,7 @@
 // Simple authentication system that just works
 export const setAuthenticated = (address: string) => {
+  if (typeof window === 'undefined') return;
+  
   localStorage.setItem('authenticated', 'true');
   localStorage.setItem('authenticated_address', address);
   localStorage.setItem('authenticated_timestamp', Date.now().toString());
@@ -11,6 +13,8 @@ export const setAuthenticated = (address: string) => {
 };
 
 export const isAuthenticated = (): boolean => {
+  if (typeof window === 'undefined') return false;
+  
   const auth = localStorage.getItem('authenticated') === 'true';
   const timestamp = localStorage.getItem('authenticated_timestamp');
   
@@ -31,10 +35,13 @@ export const isAuthenticated = (): boolean => {
 };
 
 export const getAuthenticatedAddress = (): string | null => {
+  if (typeof window === 'undefined') return null;
   return localStorage.getItem('authenticated_address');
 };
 
 export const clearAuthentication = () => {
+  if (typeof window === 'undefined') return;
+  
   localStorage.removeItem('authenticated');
   localStorage.removeItem('authenticated_address');
   localStorage.removeItem('authenticated_timestamp');
