@@ -6,8 +6,8 @@ import { SettingsContent } from "./settings-content";
 import { MobileTabs } from "./mobile-tabs";
 import { CopyNotification } from "./copy-notification";
 import { useLoggedIn } from "./use-logged-in";
-import { HybridProfileAvatar } from "../hybrid-profile-avatar";
-import { HybridProfileModal } from "../hybrid-profile-modal";
+import { MiniKitProfileAvatar } from "../minikit-profile-avatar";
+import { MiniKitProfileModal } from "../minikit-profile-modal";
 import { useState } from "react";
 
 export const LoggedIn = () => {
@@ -24,7 +24,7 @@ export const LoggedIn = () => {
   } = useLoggedIn();
   
   const isMobile = useIsMobile();
-  const [isHybridProfileModalOpen, setIsHybridProfileModalOpen] = useState(false);
+  const [isMiniKitProfileModalOpen, setIsMiniKitProfileModalOpen] = useState(false);
 
   if (isMobile) {
     return (
@@ -36,7 +36,7 @@ export const LoggedIn = () => {
               className="[&_*]:text-black"
             />
             <div className="absolute top-4 right-4 z-10">
-              <HybridProfileAvatar onProfileClick={() => setIsHybridProfileModalOpen(true)} />
+              <MiniKitProfileAvatar onProfileClick={() => setIsMiniKitProfileModalOpen(true)} />
             </div>
           </div>
           <div className="px-6 pt-0.5 pb-3">
@@ -63,9 +63,9 @@ export const LoggedIn = () => {
 
         <MobileTabs activeTab={activeTab} onTabChange={setActiveTab} />
         <CopyNotification show={copied} isMobile />
-        <HybridProfileModal 
-          isOpen={isHybridProfileModalOpen} 
-          onClose={() => setIsHybridProfileModalOpen(false)} 
+        <MiniKitProfileModal 
+          isOpen={isMiniKitProfileModalOpen} 
+          onClose={() => setIsMiniKitProfileModalOpen(false)} 
         />
       </>
     );
@@ -80,7 +80,7 @@ export const LoggedIn = () => {
             className="[&_*]:text-black"
           />
           <div className="absolute top-4 right-4 z-10">
-            <HybridProfileAvatar onProfileClick={() => setIsHybridProfileModalOpen(true)} />
+            <MiniKitProfileAvatar onProfileClick={() => setIsMiniKitProfileModalOpen(true)} />
           </div>
         </div>
         <div className="px-6 pt-0.5 pb-3">
@@ -100,9 +100,9 @@ export const LoggedIn = () => {
       </div>
 
       <CopyNotification show={copied} />
-      <HybridProfileModal 
-        isOpen={isHybridProfileModalOpen} 
-        onClose={() => setIsHybridProfileModalOpen(false)} 
+      <MiniKitProfileModal 
+        isOpen={isMiniKitProfileModalOpen} 
+        onClose={() => setIsMiniKitProfileModalOpen(false)} 
       />
     </>
   );

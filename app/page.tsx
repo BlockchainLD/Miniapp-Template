@@ -1,21 +1,25 @@
 "use client";
 
-import { SimpleSignInForm } from "./components/simple-sign-in-form";
+import { MiniKitSignInForm } from "./components/minikit-sign-in-form";
 import { LoggedIn } from "./components/logged-in";
 import { SafeAreaView } from "@worldcoin/mini-apps-ui-kit-react";
 import { useIsMobile } from "./hooks/use-is-mobile";
 import { useAccount } from "wagmi";
 import { isAuthenticated } from "./lib/simple-auth";
+import { useMiniKit, useAuthenticate } from "@coinbase/onchainkit/minikit";
 
 export default function Home() {
   const isMobile = useIsMobile();
   const { isConnected, address } = useAccount();
-  const authenticated = isAuthenticated();
+  const { context } = useMiniKit();
+  const { isAuthenticated: isMiniKitAuthenticated } = useAuthenticate();
+  const authenticated = isAuthenticated() || isMiniKitAuthenticated;
 
   // Debug: Add authentication state logging
   console.log('Home component rendering, isMobile:', isMobile);
-  console.log('Simple Auth - authenticated:', authenticated);
+  console.log('MiniKit Auth - authenticated:', authenticated);
   console.log('Wagmi - isConnected:', isConnected, 'address:', address);
+  console.log('MiniKit Context:', context);
 
   const AppContent = () => {
     if (isMobile) {
@@ -26,7 +30,7 @@ export default function Home() {
           ) : (
             <div className="flex items-center justify-center min-h-screen p-4">
               <div className="w-full max-w-md">
-                <SimpleSignInForm />
+                <MiniKitSignInForm />
               </div>
             </div>
           )}
@@ -41,7 +45,7 @@ export default function Home() {
             {authenticated ? (
               <LoggedIn />
             ) : (
-              <SimpleSignInForm />
+              <MiniKitSignInForm />
             )}
           </div>
         </div>

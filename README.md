@@ -73,6 +73,9 @@ NEXT_PUBLIC_WORLD_APP_ID=app_123456789
 
 # Farcaster API Configuration (for real user data)
 NEXT_PUBLIC_NEYNAR_API_KEY=your_neynar_api_key_here
+
+# OnchainKit Configuration (for MiniKit and Identity components)
+NEXT_PUBLIC_ONCHAINKIT_API_KEY=your_onchainkit_api_key_here
 ```
 
 #### Generate Better Auth Secret
@@ -89,6 +92,15 @@ bunx @better-auth/cli@latest secret
 4. Add it to your environment variables as `NEXT_PUBLIC_NEYNAR_API_KEY`
 
 **Note:** Without the Neynar API key, the app will use mock Farcaster data.
+
+#### Get OnchainKit API Key (for MiniKit and Identity components)
+
+1. Visit [OnchainKit](https://onchainkit.xyz/)
+2. Sign up for a free account
+3. Get your API key from the dashboard
+4. Add it to your environment variables as `NEXT_PUBLIC_ONCHAINKIT_API_KEY`
+
+**Note:** Without the OnchainKit API key, some features may not work optimally.
 
 ### 3. Convex Setup
 
@@ -157,6 +169,7 @@ Visit `http://localhost:3000` to see your mini app!
    NEXT_PUBLIC_CONVEX_SITE_URL=https://your-convex-deployment.convex.cloud
    NEXT_PUBLIC_WORLD_APP_ID=app_123456789
    NEXT_PUBLIC_NEYNAR_API_KEY=your_neynar_api_key_here
+   NEXT_PUBLIC_ONCHAINKIT_API_KEY=your_onchainkit_api_key_here
    ```
 
 4. **Update Convex Configuration:**
