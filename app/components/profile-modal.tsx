@@ -1,6 +1,7 @@
 "use client";
 
 import { useAccount } from "wagmi";
+import { isCustomSiweAuthenticated, getCustomSiweAddress } from "../lib/custom-siwe";
 import { Typography, Button } from "@worldcoin/mini-apps-ui-kit-react";
 
 interface ProfileModalProps {
@@ -10,8 +11,10 @@ interface ProfileModalProps {
 
 export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   const { address, isConnected } = useAccount();
+  const isCustomAuth = isCustomSiweAuthenticated();
+  const customAddress = getCustomSiweAddress();
 
-  if (!isOpen || !isConnected || !address) {
+  if (!isOpen || !isConnected || !address || !isCustomAuth) {
     return null;
   }
 

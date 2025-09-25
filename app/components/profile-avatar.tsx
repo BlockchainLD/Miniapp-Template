@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { isCustomSiweAuthenticated, getCustomSiweAddress } from "../lib/custom-siwe";
 import { Typography } from "@worldcoin/mini-apps-ui-kit-react";
@@ -12,11 +12,32 @@ interface ProfileAvatarProps {
 export function ProfileAvatar({ onProfileClick }: ProfileAvatarProps) {
   const { address, isConnected } = useAccount();
   const [showTooltip, setShowTooltip] = useState(false);
+  const [isCustomAuth, setIsCustomAuth] = useState(false);
+  const [customAddress, setCustomAddress] = useState<string | null>(null);
 
   // Check both Wagmi connection and custom SIWE authentication
-  const isCustomAuth = isCustomSiweAuthenticated();
-  const customAddress = getCustomSiweAddress();
-  
+  useEffect(() => {
+    const checkAuth = () => {
+      const auth = isCustomSiweAuthenticated();
+      const addr = getCustomSiweAddress();
+      setIsCustomAuth(auth);
+      setCustomAddress(addr);
+      console.log('ProfileAvatar - Auth check:', { auth, addr, isConnected, address });
+    };
+
+    // Check immediately
+    checkAuth();
+
+    // Listen for authentication events
+    const handleAuth = () => {
+      console.log('ProfileAvatar - Authentication event received');
+      checkAuth();
+    };
+
+    window.addEventListener('siwe_authenticated', handleAuth);
+    return () => window.removeEventListener('siwe_authenticated', handleAuth);
+  }, [isConnected, address]);
+
   // Debug logging
   console.log('ProfileAvatar - isConnected:', isConnected, 'address:', address);
   console.log('ProfileAvatar - isCustomAuth:', isCustomAuth, 'customAddress:', customAddress);

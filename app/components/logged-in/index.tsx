@@ -9,6 +9,7 @@ import { useLoggedIn } from "./use-logged-in";
 import { ProfileAvatar } from "../profile-avatar";
 import { ProfileModal } from "../profile-modal";
 import { useState } from "react";
+import { isCustomSiweAuthenticated, getCustomSiweAddress } from "../../lib/custom-siwe";
 
 export const LoggedIn = () => {
   const {
@@ -25,6 +26,11 @@ export const LoggedIn = () => {
   
   const isMobile = useIsMobile();
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  
+  // Debug: Check authentication state
+  const isCustomAuth = isCustomSiweAuthenticated();
+  const customAddress = getCustomSiweAddress();
+  console.log('LoggedIn - Custom Auth State:', { isCustomAuth, customAddress });
 
   if (isMobile) {
     return (
