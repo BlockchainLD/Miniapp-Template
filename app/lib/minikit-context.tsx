@@ -120,8 +120,13 @@ export function MiniKitProvider({ children }: { children: React.ReactNode }) {
             client: contextData.client ? {
               clientFid: contextData.client.clientFid,
               added: contextData.client.added,
-              platformType: contextData.client.platformType,
-              safeAreaInsets: contextData.client.safeAreaInsets,
+              platformType: (contextData.client.platformType as 'mobile' | 'desktop') || 'mobile',
+              safeAreaInsets: contextData.client.safeAreaInsets || {
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+              },
             } : undefined,
             location: contextData.location ? {
               type: contextData.location.type,
