@@ -107,7 +107,7 @@ export function MiniKitProvider({ children }: { children: React.ReactNode }) {
 
         if (inMiniApp) {
           // Get context data from Farcaster SDK
-          const contextData = sdk.context;
+          const contextData = await sdk.context;
           
           // Transform to MiniKit format
           const miniKitContext: MiniKitContext = {
