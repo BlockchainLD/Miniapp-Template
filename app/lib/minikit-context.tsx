@@ -129,7 +129,11 @@ export function MiniKitProvider({ children }: { children: React.ReactNode }) {
               },
             } : undefined,
             location: contextData.location ? {
-              type: contextData.location.type,
+              type: contextData.location.type === 'cast_share' ? 'cast_embed' : 
+                   contextData.location.type === 'notification' ? 'messaging' :
+                   contextData.location.type === 'channel' ? 'messaging' :
+                   contextData.location.type === 'open_miniapp' ? 'launcher' :
+                   contextData.location.type as 'launcher' | 'cast_embed' | 'messaging',
               cast: contextData.location.cast ? {
                 author: {
                   fid: contextData.location.cast.author.fid,
