@@ -21,12 +21,6 @@ export default function Home() {
     if (isMobile) {
       return (
         <SafeAreaView className="min-h-screen bg-white">
-          {/* Debug: Show authentication state */}
-          <div className="fixed top-0 left-0 right-0 bg-yellow-200 p-2 text-xs z-50">
-            <div>Convex: {isAuthenticated ? '✅' : '❌'} | Wagmi: {isConnected ? '✅' : '❌'} | Loading: {isLoading ? '⏳' : '✅'}</div>
-            <div>Address: {address ? address.slice(0, 10) + '...' : 'None'}</div>
-          </div>
-          
           <Authenticated>
             <LoggedIn />
           </Authenticated>
@@ -59,12 +53,6 @@ export default function Home() {
 
     return (
       <SafeAreaView className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        {/* Debug: Show authentication state */}
-        <div className="fixed top-0 left-0 right-0 bg-yellow-200 p-2 text-xs z-50">
-          <div>Convex: {isAuthenticated ? '✅' : '❌'} | Wagmi: {isConnected ? '✅' : '❌'} | Loading: {isLoading ? '⏳' : '✅'}</div>
-          <div>Address: {address ? address.slice(0, 10) + '...' : 'None'}</div>
-        </div>
-        
         <div className="flex items-center justify-center min-h-screen p-4">
           <div className="w-full max-w-md">
             <Authenticated>

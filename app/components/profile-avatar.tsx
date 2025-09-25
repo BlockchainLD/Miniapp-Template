@@ -17,11 +17,7 @@ export function ProfileAvatar({ onProfileClick }: ProfileAvatarProps) {
 
   if (!isConnected || !address) {
     console.log('ProfileAvatar - Not rendering: not connected or no address');
-    return (
-      <div className="w-10 h-10 rounded-full border-2 border-red-500 bg-red-100 flex items-center justify-center text-red-600 font-bold text-xs">
-        ?
-      </div>
-    );
+    return null;
   }
 
   // Generate initials from address

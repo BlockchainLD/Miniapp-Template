@@ -37,10 +37,6 @@ export const LoggedIn = () => {
             />
             <div className="absolute top-4 right-4 z-10">
               <ProfileAvatar onProfileClick={() => setIsProfileModalOpen(true)} />
-              {/* Debug: Always show a test element */}
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold mt-2">
-                TEST
-              </div>
             </div>
           </div>
           <div className="px-6 pt-0.5 pb-3">
@@ -85,10 +81,6 @@ export const LoggedIn = () => {
           />
           <div className="absolute top-4 right-4 z-10">
             <ProfileAvatar onProfileClick={() => setIsProfileModalOpen(true)} />
-            {/* Debug: Always show a test element */}
-            <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white text-xs font-bold mt-2">
-              TEST
-            </div>
           </div>
         </div>
         <div className="px-6 pt-0.5 pb-3">

@@ -65,6 +65,24 @@ export function SignInForm() {
     }
   }, [isInMiniApp, isConnected, isLoading, connectAsync, connectors]);
 
+  // Auto-authenticate when wallet connects but not authenticated
+  useEffect(() => {
+    if (isConnected && address && !isAuthenticated && !isLoading) {
+      const autoAuthenticate = async () => {
+        try {
+          console.log('Auto-authenticating with address:', address);
+          setIsLoading(true);
+          await performSiweAuth(address, signMessageAsync);
+        } catch (error) {
+          console.error('Auto-authentication failed:', error);
+          setIsLoading(false);
+        }
+      };
+      
+      autoAuthenticate();
+    }
+  }, [isConnected, address, isAuthenticated, isLoading, signMessageAsync]);
+
   const handleSiweSignIn = async () => {
     setIsLoading(true);
     
@@ -102,36 +120,51 @@ export function SignInForm() {
           </Typography>
         </div>
       </div>
-      <div className="space-y-4">
-        {isInMiniApp ? (
-          // Mini App users: Show auto-connect status
-          isConnected ? (
-            isLoading ? (
-              <div className="flex items-center justify-center space-x-3 py-4">
-                <Spinner />
-                <Typography variant="body" className="text-gray-600">
-                  Authenticating...
-                </Typography>
-              </div>
-            ) : (
-              <div className="text-center py-4">
-                <Typography variant="body" className="text-green-600">
-                  🎉 Auto-connected in Mini App!
-                </Typography>
-                <Typography variant="body" className="text-gray-600 mt-2">
-                  Wallet: {address?.slice(0, 6)}...{address?.slice(-4)}
-                </Typography>
-              </div>
-            )
-          ) : (
-            <div className="flex items-center justify-center space-x-3 py-4">
-              <Spinner />
-              <Typography variant="body" className="text-gray-600">
-                Auto-connecting...
-              </Typography>
-            </div>
-          )
-        ) : (
+             <div className="space-y-4">
+               {isInMiniApp ? (
+                 // Mini App users: Show auto-connect and auto-authenticate status
+                 isConnected ? (
+                   isAuthenticated ? (
+                     <div className="text-center py-4">
+                       <Typography variant="body" className="text-green-600">
+                         🎉 Fully authenticated in Mini App!
+                       </Typography>
+                       <Typography variant="body" className="text-gray-600 mt-2">
+                         Wallet: {address?.slice(0, 6)}...{address?.slice(-4)}
+                       </Typography>
+                     </div>
+                   ) : isLoading ? (
+                     <div className="flex items-center justify-center space-x-3 py-4">
+                       <Spinner />
+                       <Typography variant="body" className="text-gray-600">
+                         {isConnected ? 'Authenticating...' : 'Connecting...'}
+                       </Typography>
+                     </div>
+                   ) : (
+                     <div className="text-center py-4 space-y-3">
+                       <Typography variant="body" className="text-yellow-600">
+                         ⚠️ Connected but not authenticated
+                       </Typography>
+                       <Typography variant="body" className="text-gray-600">
+                         Wallet: {address?.slice(0, 6)}...{address?.slice(-4)}
+                       </Typography>
+                       <button
+                         onClick={handleSiweSignIn}
+                         className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                       >
+                         Complete Authentication
+                       </button>
+                     </div>
+                   )
+                 ) : (
+                   <div className="flex items-center justify-center space-x-3 py-4">
+                     <Spinner />
+                     <Typography variant="body" className="text-gray-600">
+                       Auto-connecting...
+                     </Typography>
+                   </div>
+                 )
+               ) : (
           // Web users: Show Base Smart Wallet sign-in
           isLoading ? (
             <div className="flex items-center justify-center space-x-3 py-4">
