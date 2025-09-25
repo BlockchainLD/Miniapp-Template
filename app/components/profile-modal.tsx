@@ -1,7 +1,6 @@
 "use client";
 
 import { useAccount } from "wagmi";
-import { Avatar, Identity, Name, Badge, Address } from '@coinbase/onchainkit/identity';
 import { Typography, Button } from "@worldcoin/mini-apps-ui-kit-react";
 
 interface ProfileModalProps {
@@ -15,6 +14,9 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
   if (!isOpen || !isConnected || !address) {
     return null;
   }
+
+  // Generate initials from address
+  const initials = address.slice(2, 4).toUpperCase();
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -38,32 +40,19 @@ export function ProfileModal({ isOpen, onClose }: ProfileModalProps) {
         <div className="space-y-6">
           {/* Avatar and Name */}
           <div className="flex flex-col items-center space-y-4">
-            <Identity
-              address={address}
-              schemaId="0xf8b05c79f090979bf4a80270aba232dff11a10d9ca55c4f88de95317970f0de9"
-            >
-              <Avatar className="w-20 h-20 rounded-full border-4 border-blue-100 shadow-lg" />
-            </Identity>
+            <div className="w-20 h-20 rounded-full border-4 border-blue-100 shadow-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl">
+              {initials}
+            </div>
             
             <div className="text-center space-y-2">
-              <Identity
-                address={address}
-                schemaId="0xf8b05c79f090979bf4a80270aba232dff11a10d9ca55c4f88de95317970f0de9"
-              >
-                <Name className="text-xl font-semibold text-gray-900">
-                  <Badge 
-                    tooltip="Verified Farcaster Account"
-                    className="ml-2"
-                  />
-                </Name>
-              </Identity>
+              <Typography variant="heading" className="text-xl font-semibold text-gray-900">
+                Farcaster User
+                <span className="ml-2 text-blue-500">✓</span>
+              </Typography>
               
-              <Identity
-                address={address}
-                schemaId="0xf8b05c79f090979bf4a80270aba232dff11a10d9ca55c4f88de95317970f0de9"
-              >
-                <Address className="text-sm text-gray-500 font-mono" />
-              </Identity>
+              <Typography variant="body" className="text-sm text-gray-500 font-mono">
+                {address}
+              </Typography>
             </div>
           </div>
 

@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useAccount } from "wagmi";
-import { Avatar, Identity } from '@coinbase/onchainkit/identity';
 import { Typography } from "@worldcoin/mini-apps-ui-kit-react";
 
 interface ProfileAvatarProps {
@@ -21,6 +20,9 @@ export function ProfileAvatar({ onProfileClick }: ProfileAvatarProps) {
     return null;
   }
 
+  // Generate initials from address
+  const initials = address.slice(2, 4).toUpperCase();
+
   return (
     <div className="relative">
       <div 
@@ -29,9 +31,10 @@ export function ProfileAvatar({ onProfileClick }: ProfileAvatarProps) {
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
       >
-        <Identity address={address}>
-          <Avatar className="w-10 h-10 rounded-full border-2 border-white shadow-lg" />
-        </Identity>
+        {/* Custom avatar with address initials */}
+        <div className="w-10 h-10 rounded-full border-2 border-white shadow-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+          {initials}
+        </div>
       </div>
       
       {/* Tooltip */}
