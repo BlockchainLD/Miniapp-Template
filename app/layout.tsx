@@ -6,6 +6,8 @@ import { ConvexClientProvider } from "./providers/convex-client-provider";
 import { Provider as WagmiProvider } from './providers/wagmi-provider';
 import { APP_METADATA, fcMiniAppEmbed } from "./lib/utils";
 import { Toaster } from "@worldcoin/mini-apps-ui-kit-react";
+import { OnchainKitProvider } from '@coinbase/onchainkit';
+import { base } from 'wagmi/chains';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,10 +41,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <WagmiProvider>
-          <ConvexClientProvider>
-            {children}
-            <Toaster />
-          </ConvexClientProvider>
+          <OnchainKitProvider chain={base}>
+            <ConvexClientProvider>
+              {children}
+              <Toaster />
+            </ConvexClientProvider>
+          </OnchainKitProvider>
         </WagmiProvider>
       </body>
     </html>

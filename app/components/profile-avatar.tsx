@@ -13,7 +13,11 @@ export function ProfileAvatar({ onProfileClick }: ProfileAvatarProps) {
   const { address, isConnected } = useAccount();
   const [showTooltip, setShowTooltip] = useState(false);
 
+  // Debug logging
+  console.log('ProfileAvatar - isConnected:', isConnected, 'address:', address);
+
   if (!isConnected || !address) {
+    console.log('ProfileAvatar - Not rendering: not connected or no address');
     return null;
   }
 
@@ -25,10 +29,7 @@ export function ProfileAvatar({ onProfileClick }: ProfileAvatarProps) {
         onMouseEnter={() => setShowTooltip(true)}
         onMouseLeave={() => setShowTooltip(false)}
       >
-        <Identity
-          address={address}
-          schemaId="0xf8b05c79f090979bf4a80270aba232dff11a10d9ca55c4f88de95317970f0de9"
-        >
+        <Identity address={address}>
           <Avatar className="w-10 h-10 rounded-full border-2 border-white shadow-lg" />
         </Identity>
       </div>
