@@ -13,16 +13,30 @@ import { sdk } from '@farcaster/miniapp-sdk';
 
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [authState, setAuthState] = useState<'idle' | 'connecting' | 'authenticating' | 'success' | 'error'>('idle');
   const { isAuthenticated } = useConvexAuth();
   const { address, isConnected } = useAccount();
   const { connectAsync, connectors } = useConnect();
   const { signMessageAsync } = useSignMessage();
   const [isInMiniApp, setIsInMiniApp] = useState(false);
   const hasAttemptedAuth = useRef(false);
+  const authTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Clear any existing timeouts
+  useEffect(() => {
+    return () => {
+      if (authTimeoutRef.current) {
+        clearTimeout(authTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  // Reset loading state when authenticated
   useEffect(() => {
     if (isAuthenticated) {
       setIsLoading(false);
+      setAuthState('success');
+      hasAttemptedAuth.current = false;
     }
   }, [isAuthenticated]);
 
@@ -32,6 +46,7 @@ export function SignInForm() {
       try {
         const isInMiniApp = await sdk.isInMiniApp();
         setIsInMiniApp(isInMiniApp);
+        console.log('Mini App detected:', isInMiniApp);
       } catch (error) {
         console.error('Error checking Mini App status:', error);
         setIsInMiniApp(false);
@@ -41,13 +56,26 @@ export function SignInForm() {
     checkMiniApp();
   }, []);
 
-  // Auto-connect when in Mini App
+  // Single effect to handle the entire authentication flow
   useEffect(() => {
-    if (isInMiniApp && !isConnected && !isLoading) {
-      const autoConnect = async () => {
+    const handleAuthentication = async () => {
+      // If already authenticated, do nothing
+      if (isAuthenticated) {
+        return;
+      }
+
+      // If already attempting auth, do nothing
+      if (hasAttemptedAuth.current || authState === 'authenticating') {
+        return;
+      }
+
+      // If in Mini App and not connected, connect first
+      if (isInMiniApp && !isConnected && authState === 'idle') {
         try {
+          console.log('Starting auto-connect in Mini App');
+          setAuthState('connecting');
           setIsLoading(true);
-          // Find the Farcaster connector
+          
           const farcasterConnector = connectors.find(connector => 
             connector.type === 'farcasterMiniApp' || 
             connector.name.toLowerCase().includes('farcaster')
@@ -58,47 +86,52 @@ export function SignInForm() {
           }
         } catch (error) {
           console.error('Auto-connect failed:', error);
+          setAuthState('error');
           setIsLoading(false);
         }
-      };
-      
-      autoConnect();
-    }
-  }, [isInMiniApp, isConnected, isLoading, connectAsync, connectors]);
+        return;
+      }
 
-  // Auto-authenticate when wallet connects but not authenticated
-  useEffect(() => {
-    if (isConnected && address && !isAuthenticated && !isLoading && !hasAttemptedAuth.current) {
-      const autoAuthenticate = async () => {
+      // If connected but not authenticated, authenticate
+      if (isConnected && address && !isAuthenticated && authState !== 'authenticating') {
         try {
-          console.log('Auto-authenticating with address:', address);
+          console.log('Starting auto-authentication with address:', address);
           hasAttemptedAuth.current = true;
+          setAuthState('authenticating');
           setIsLoading(true);
           
-          // Add timeout to prevent hanging
-          const authPromise = performSiweAuth(address, signMessageAsync);
-          const timeoutPromise = new Promise((_, reject) => 
-            setTimeout(() => reject(new Error('Auto-authentication timeout')), 30000)
-          );
+          // Set timeout
+          authTimeoutRef.current = setTimeout(() => {
+            console.error('Authentication timeout');
+            setAuthState('error');
+            setIsLoading(false);
+            hasAttemptedAuth.current = false;
+          }, 30000);
           
-          await Promise.race([authPromise, timeoutPromise]);
+          await performSiweAuth(address, signMessageAsync);
+          
+          // Clear timeout on success
+          if (authTimeoutRef.current) {
+            clearTimeout(authTimeoutRef.current);
+            authTimeoutRef.current = null;
+          }
+          
         } catch (error) {
           console.error('Auto-authentication failed:', error);
-          hasAttemptedAuth.current = false; // Reset on failure so user can try again
+          setAuthState('error');
           setIsLoading(false);
+          hasAttemptedAuth.current = false;
+          
+          if (authTimeoutRef.current) {
+            clearTimeout(authTimeoutRef.current);
+            authTimeoutRef.current = null;
+          }
         }
-      };
-      
-      autoAuthenticate();
-    }
-  }, [isConnected, address, isAuthenticated, isLoading, signMessageAsync]);
+      }
+    };
 
-  // Reset auth attempt flag when authentication succeeds
-  useEffect(() => {
-    if (isAuthenticated) {
-      hasAttemptedAuth.current = false;
-    }
-  }, [isAuthenticated]);
+    handleAuthentication();
+  }, [isInMiniApp, isConnected, address, isAuthenticated, authState, connectAsync, connectors, signMessageAsync]);
 
   const handleSiweSignIn = async () => {
     setIsLoading(true);
@@ -145,10 +178,14 @@ export function SignInForm() {
       </div>
              <div className="space-y-4">
                {isInMiniApp ? (
-                 // Mini App users: Show auto-connect and auto-authenticate status
-                 isConnected ? (
-                   isAuthenticated ? (
-                     <div className="text-center py-4">
+                 // Mini App users: Show detailed auth state
+                 <div className="text-center py-4 space-y-3">
+                   <div className="text-xs text-gray-500 mb-2">
+                     State: {authState} | Connected: {isConnected ? '✅' : '❌'} | Auth: {isAuthenticated ? '✅' : '❌'}
+                   </div>
+                   
+                   {authState === 'success' || isAuthenticated ? (
+                     <div>
                        <Typography variant="body" className="text-green-600">
                          🎉 Fully authenticated in Mini App!
                        </Typography>
@@ -156,37 +193,44 @@ export function SignInForm() {
                          Wallet: {address?.slice(0, 6)}...{address?.slice(-4)}
                        </Typography>
                      </div>
-                   ) : isLoading ? (
-                     <div className="flex items-center justify-center space-x-3 py-4">
+                   ) : authState === 'connecting' ? (
+                     <div className="flex items-center justify-center space-x-3">
                        <Spinner />
                        <Typography variant="body" className="text-gray-600">
-                         {isConnected ? 'Authenticating...' : 'Connecting...'}
+                         Connecting wallet...
                        </Typography>
                      </div>
-                   ) : (
-                     <div className="text-center py-4 space-y-3">
-                       <Typography variant="body" className="text-yellow-600">
-                         ⚠️ Connected but not authenticated
-                       </Typography>
+                   ) : authState === 'authenticating' ? (
+                     <div className="flex items-center justify-center space-x-3">
+                       <Spinner />
                        <Typography variant="body" className="text-gray-600">
-                         Wallet: {address?.slice(0, 6)}...{address?.slice(-4)}
+                         Authenticating...
+                       </Typography>
+                     </div>
+                   ) : authState === 'error' ? (
+                     <div className="space-y-3">
+                       <Typography variant="body" className="text-red-600">
+                         ❌ Authentication failed
                        </Typography>
                        <button
-                         onClick={handleSiweSignIn}
+                         onClick={() => {
+                           setAuthState('idle');
+                           hasAttemptedAuth.current = false;
+                         }}
                          className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                        >
-                         Complete Authentication
+                         Retry Authentication
                        </button>
                      </div>
-                   )
-                 ) : (
-                   <div className="flex items-center justify-center space-x-3 py-4">
-                     <Spinner />
-                     <Typography variant="body" className="text-gray-600">
-                       Auto-connecting...
-                     </Typography>
-                   </div>
-                 )
+                   ) : (
+                     <div className="flex items-center justify-center space-x-3">
+                       <Spinner />
+                       <Typography variant="body" className="text-gray-600">
+                         Initializing...
+                       </Typography>
+                     </div>
+                   )}
+                 </div>
                ) : (
           // Web users: Show Base Smart Wallet sign-in
           isLoading ? (
