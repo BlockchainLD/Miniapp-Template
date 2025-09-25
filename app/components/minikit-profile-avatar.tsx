@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { useMiniKit, useAuthenticate, useIsInMiniApp } from "@coinbase/onchainkit/minikit";
+import { useMiniKit, useAuthenticate, useIsInMiniApp } from "../lib/minikit-context";
 import { Avatar, Identity, Name, Badge } from "@coinbase/onchainkit/identity";
 import { isAuthenticated } from "../lib/simple-auth";
 

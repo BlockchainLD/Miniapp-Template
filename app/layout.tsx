@@ -6,8 +6,7 @@ import { ConvexClientProvider } from "./providers/convex-client-provider";
 import { Provider as WagmiProvider } from './providers/wagmi-provider';
 import { APP_METADATA, fcMiniAppEmbed } from "./lib/utils";
 import { Toaster } from "@worldcoin/mini-apps-ui-kit-react";
-import { OnchainKitProvider } from "@coinbase/onchainkit";
-import { base } from "viem/chains";
+import { MiniKitProvider } from "./lib/minikit-context";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,16 +40,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <WagmiProvider>
-          <OnchainKitProvider 
-            chain={base}
-            apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY || "demo"}
-            miniKit={{ enabled: true }}
-          >
+          <MiniKitProvider>
             <ConvexClientProvider>
               {children}
               <Toaster />
             </ConvexClientProvider>
-          </OnchainKitProvider>
+          </MiniKitProvider>
         </WagmiProvider>
         
         {/* Farcaster Mini App SDK Ready Signal */}
