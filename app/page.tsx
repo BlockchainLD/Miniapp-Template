@@ -12,8 +12,7 @@ export default function Home() {
   const isMobile = useIsMobile();
   const { isConnected, address } = useAccount();
   const { context } = useMiniKit();
-  const { isAuthenticated: isMiniKitAuthenticated } = useAuthenticate();
-  const authenticated = isAuthenticated() || isMiniKitAuthenticated;
+  const authenticated = isAuthenticated();
 
   // Debug: Add authentication state logging
   console.log('Home component rendering, isMobile:', isMobile);

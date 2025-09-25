@@ -14,7 +14,7 @@ export function MiniKitSignInForm() {
   
   // MiniKit hooks
   const { context, setFrameReady } = useMiniKit();
-  const { authenticate, isAuthenticated: isMiniKitAuthenticated } = useAuthenticate();
+  const { signIn } = useAuthenticate();
   
   // Wagmi hooks
   const { address, isConnected } = useAccount();
@@ -27,15 +27,15 @@ export function MiniKitSignInForm() {
 
   // Check if already authenticated
   useEffect(() => {
-    if (isAuthenticated() || isMiniKitAuthenticated) {
+    if (isAuthenticated()) {
       setAuthState('success');
     }
-  }, [isMiniKitAuthenticated]);
+  }, []);
 
   // Auto-connect for Mini App users
   useEffect(() => {
     const handleAutoConnect = async () => {
-      if (context?.isInMiniApp && !isConnected && authState === 'idle' && !isAuthenticated() && !isMiniKitAuthenticated) {
+      if (context?.isInMiniApp && !isConnected && authState === 'idle' && !isAuthenticated()) {
         try {
           console.log('Starting auto-connect in Mini App via MiniKit');
           setAuthState('connecting');
@@ -59,27 +59,27 @@ export function MiniKitSignInForm() {
     };
 
     handleAutoConnect();
-  }, [context?.isInMiniApp, isConnected, authState, connectAsync, connectors, isMiniKitAuthenticated]);
+  }, [context?.isInMiniApp, isConnected, authState, connectAsync, connectors]);
 
   // Auto-authenticate when connected using MiniKit
   useEffect(() => {
     const handleAutoAuth = async () => {
-      if (isConnected && address && !isAuthenticated() && !isMiniKitAuthenticated && authState === 'idle') {
+      if (isConnected && address && !isAuthenticated() && authState === 'idle') {
         try {
           console.log('Starting MiniKit authentication with address:', address);
           setAuthState('authenticating');
           setIsLoading(true);
           
           // Use MiniKit authentication
-          const authResult = await authenticate();
+          const authResult = await signIn();
           
-          if (authResult.success) {
+          if (authResult) {
             // Also set our simple auth for compatibility
             setAuthenticated(address);
             setAuthState('success');
             setIsLoading(false);
           } else {
-            throw new Error(authResult.error || 'Authentication failed');
+            throw new Error('Authentication failed');
           }
           
         } catch (error) {
@@ -92,7 +92,7 @@ export function MiniKitSignInForm() {
     };
 
     handleAutoAuth();
-  }, [isConnected, address, authState, authenticate, isMiniKitAuthenticated]);
+  }, [isConnected, address, authState, signIn]);
 
   const handleManualSignIn = async () => {
     setIsLoading(true);
@@ -111,14 +111,14 @@ export function MiniKitSignInForm() {
       }
 
       // Use MiniKit authentication
-      const authResult = await authenticate();
+      const authResult = await signIn();
       
-      if (authResult.success) {
+      if (authResult) {
         setAuthenticated(walletAddress);
         setAuthState('success');
         setIsLoading(false);
       } else {
-        throw new Error(authResult.error || 'Authentication failed');
+        throw new Error('Authentication failed');
       }
 
     } catch (error) {
@@ -130,7 +130,7 @@ export function MiniKitSignInForm() {
   };
 
   // Show success state
-  if (authState === 'success' || isAuthenticated() || isMiniKitAuthenticated) {
+  if (authState === 'success' || isAuthenticated()) {
     return (
       <div className="bg-white rounded-3xl shadow-2xl p-7 space-y-7">
         <div className="text-center space-y-3">
@@ -178,7 +178,7 @@ export function MiniKitSignInForm() {
           // Mini App users: Show detailed auth state
           <div className="text-center py-4 space-y-3">
             <div className="text-xs text-gray-500 mb-2">
-              State: {authState} | Connected: {isConnected ? '✅' : '❌'} | Auth: {isAuthenticated() || isMiniKitAuthenticated ? '✅' : '❌'}
+              State: {authState} | Connected: {isConnected ? '✅' : '❌'} | Auth: {isAuthenticated() ? '✅' : '❌'}
             </div>
 
             {authState === 'connecting' ? (

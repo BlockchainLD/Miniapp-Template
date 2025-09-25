@@ -13,20 +13,19 @@ interface MiniKitProfileAvatarProps {
 export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarProps) {
   const { address, isConnected } = useAccount();
   const { context } = useMiniKit();
-  const { isAuthenticated: isMiniKitAuthenticated } = useAuthenticate();
+  const { signIn } = useAuthenticate();
   const [showTooltip, setShowTooltip] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
 
   // Check authentication state
   useEffect(() => {
     const checkAuth = () => {
-      const auth = isAuthenticated() || isMiniKitAuthenticated;
+      const auth = isAuthenticated();
       setAuthenticated(auth);
       console.log('MiniKitProfileAvatar - Auth check:', { 
         auth, 
         isConnected, 
         address, 
-        isMiniKitAuthenticated,
         isInMiniApp: context?.isInMiniApp 
       });
     };
@@ -42,7 +41,7 @@ export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarPro
 
     window.addEventListener('auth_state_changed', handleAuthChange);
     return () => window.removeEventListener('auth_state_changed', handleAuthChange);
-  }, [isConnected, address, isMiniKitAuthenticated, context?.isInMiniApp]);
+  }, [isConnected, address, context?.isInMiniApp]);
 
   // Only show if connected and authenticated
   if (!isConnected || !address || !authenticated) {

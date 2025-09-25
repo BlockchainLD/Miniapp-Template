@@ -16,7 +16,7 @@ interface MiniKitProfileModalProps {
 export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProps) {
   const { address, isConnected } = useAccount();
   const { context } = useMiniKit();
-  const { isAuthenticated: isMiniKitAuthenticated } = useAuthenticate();
+  const { signIn } = useAuthenticate();
   const [authenticated, setAuthenticated] = useState(false);
   const [farcasterData, setFarcasterData] = useState<FarcasterUserData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -25,13 +25,12 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
   // Check authentication state
   useEffect(() => {
     const checkAuth = () => {
-      const auth = isAuthenticated() || isMiniKitAuthenticated;
+      const auth = isAuthenticated();
       setAuthenticated(auth);
       console.log('MiniKitProfileModal - Auth check:', { 
         auth, 
         isConnected, 
         address, 
-        isMiniKitAuthenticated,
         isInMiniApp: context?.isInMiniApp 
       });
     };
@@ -47,7 +46,7 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
 
     window.addEventListener('auth_state_changed', handleAuthChange);
     return () => window.removeEventListener('auth_state_changed', handleAuthChange);
-  }, [isConnected, address, isMiniKitAuthenticated, context?.isInMiniApp]);
+  }, [isConnected, address, context?.isInMiniApp]);
 
   // Load real Farcaster data when modal opens
   useEffect(() => {
