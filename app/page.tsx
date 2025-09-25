@@ -6,12 +6,13 @@ import { SafeAreaView } from "@worldcoin/mini-apps-ui-kit-react";
 import { useIsMobile } from "./hooks/use-is-mobile";
 import { useAccount } from "wagmi";
 import { isAuthenticated } from "./lib/simple-auth";
-import { useMiniKit, useAuthenticate } from "@coinbase/onchainkit/minikit";
+import { useMiniKit, useIsInMiniApp } from "@coinbase/onchainkit/minikit";
 
 export default function Home() {
   const isMobile = useIsMobile();
   const { isConnected, address } = useAccount();
   const { context } = useMiniKit();
+  const { isInMiniApp } = useIsInMiniApp();
   const authenticated = isAuthenticated();
 
   // Debug: Add authentication state logging
@@ -19,6 +20,7 @@ export default function Home() {
   console.log('MiniKit Auth - authenticated:', authenticated);
   console.log('Wagmi - isConnected:', isConnected, 'address:', address);
   console.log('MiniKit Context:', context);
+  console.log('Is in Mini App:', isInMiniApp);
 
   const AppContent = () => {
     if (isMobile) {

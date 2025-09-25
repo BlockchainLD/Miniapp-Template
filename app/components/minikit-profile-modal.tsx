@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { useMiniKit, useAuthenticate } from "@coinbase/onchainkit/minikit";
+import { useMiniKit, useAuthenticate, useIsInMiniApp } from "@coinbase/onchainkit/minikit";
 import { Avatar, Identity, Name, Badge, Address } from "@coinbase/onchainkit/identity";
 import { isAuthenticated, signOut } from "../lib/simple-auth";
 import { fetchFarcasterDataByAddress, FarcasterUserData } from "../lib/farcaster-api";
@@ -17,6 +17,7 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
   const { address, isConnected } = useAccount();
   const { context } = useMiniKit();
   const { signIn } = useAuthenticate();
+  const { isInMiniApp } = useIsInMiniApp();
   const [authenticated, setAuthenticated] = useState(false);
   const [farcasterData, setFarcasterData] = useState<FarcasterUserData | null>(null);
   const [loading, setLoading] = useState(false);
@@ -31,7 +32,7 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
         auth, 
         isConnected, 
         address, 
-        isInMiniApp: context?.client 
+        isInMiniApp 
       });
     };
 
@@ -46,7 +47,7 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
 
     window.addEventListener('auth_state_changed', handleAuthChange);
     return () => window.removeEventListener('auth_state_changed', handleAuthChange);
-  }, [isConnected, address, context?.client]);
+  }, [isConnected, address, isInMiniApp]);
 
   // Load real Farcaster data when modal opens
   useEffect(() => {
@@ -77,7 +78,7 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
         <div className="flex items-center justify-between">
           <Typography variant="heading" className="text-gray-900">
             Profile
-            {context?.client && (
+            {isInMiniApp && (
               <span className="ml-2 text-blue-600 text-sm">✨ Mini App</span>
             )}
           </Typography>

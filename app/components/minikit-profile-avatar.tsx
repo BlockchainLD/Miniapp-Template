@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { useMiniKit, useAuthenticate } from "@coinbase/onchainkit/minikit";
+import { useMiniKit, useAuthenticate, useIsInMiniApp } from "@coinbase/onchainkit/minikit";
 import { Avatar, Identity, Name, Badge } from "@coinbase/onchainkit/identity";
 import { isAuthenticated } from "../lib/simple-auth";
 
@@ -14,6 +14,7 @@ export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarPro
   const { address, isConnected } = useAccount();
   const { context } = useMiniKit();
   const { signIn } = useAuthenticate();
+  const { isInMiniApp } = useIsInMiniApp();
   const [showTooltip, setShowTooltip] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
 
@@ -26,7 +27,7 @@ export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarPro
         auth, 
         isConnected, 
         address, 
-        isInMiniApp: context?.client 
+        isInMiniApp 
       });
     };
 
@@ -41,7 +42,7 @@ export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarPro
 
     window.addEventListener('auth_state_changed', handleAuthChange);
     return () => window.removeEventListener('auth_state_changed', handleAuthChange);
-  }, [isConnected, address, context?.client]);
+  }, [isConnected, address, isInMiniApp]);
 
   // Only show if connected and authenticated
   if (!isConnected || !address || !authenticated) {
@@ -70,7 +71,7 @@ export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarPro
         <div className="absolute top-12 right-0 bg-gray-900 text-white px-3 py-2 rounded-lg shadow-lg z-50 whitespace-nowrap">
           <div className="text-xs">
             Click to view profile
-            {context?.client && (
+            {isInMiniApp && (
               <div className="text-blue-400 mt-1">✨ Mini App</div>
             )}
           </div>
