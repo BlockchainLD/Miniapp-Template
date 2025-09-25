@@ -56,7 +56,7 @@ export function SimpleProfileAvatar({ onProfileClick }: SimpleProfileAvatarProps
         onMouseLeave={() => setShowTooltip(false)}
       >
         {/* Custom avatar with address initials */}
-        <div className="w-10 h-10 rounded-full border-2 border-white shadow-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+        <div className="w-10 h-10 rounded-full border-2 border-white shadow-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm hover:shadow-xl transition-shadow duration-200">
           {initials}
         </div>
       </div>

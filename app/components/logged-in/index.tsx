@@ -7,7 +7,7 @@ import { MobileTabs } from "./mobile-tabs";
 import { CopyNotification } from "./copy-notification";
 import { useLoggedIn } from "./use-logged-in";
 import { SimpleProfileAvatar } from "../simple-profile-avatar";
-import { ProfileModal } from "../profile-modal";
+import { SimpleSimpleProfileModal } from "../simple-profile-modal";
 import { useState } from "react";
 
 export const LoggedIn = () => {
@@ -24,7 +24,7 @@ export const LoggedIn = () => {
   } = useLoggedIn();
   
   const isMobile = useIsMobile();
-  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
+  const [isSimpleProfileModalOpen, setIsSimpleProfileModalOpen] = useState(false);
 
   if (isMobile) {
     return (
@@ -36,7 +36,7 @@ export const LoggedIn = () => {
               className="[&_*]:text-black"
             />
             <div className="absolute top-4 right-4 z-10">
-              <SimpleProfileAvatar onProfileClick={() => setIsProfileModalOpen(true)} />
+              <SimpleProfileAvatar onProfileClick={() => setIsSimpleProfileModalOpen(true)} />
             </div>
           </div>
           <div className="px-6 pt-0.5 pb-3">
@@ -63,9 +63,9 @@ export const LoggedIn = () => {
 
         <MobileTabs activeTab={activeTab} onTabChange={setActiveTab} />
         <CopyNotification show={copied} isMobile />
-        <ProfileModal 
-          isOpen={isProfileModalOpen} 
-          onClose={() => setIsProfileModalOpen(false)} 
+        <SimpleProfileModal 
+          isOpen={isSimpleProfileModalOpen} 
+          onClose={() => setIsSimpleProfileModalOpen(false)} 
         />
       </>
     );
@@ -80,7 +80,7 @@ export const LoggedIn = () => {
             className="[&_*]:text-black"
           />
           <div className="absolute top-4 right-4 z-10">
-            <SimpleProfileAvatar onProfileClick={() => setIsProfileModalOpen(true)} />
+            <SimpleProfileAvatar onProfileClick={() => setIsSimpleProfileModalOpen(true)} />
           </div>
         </div>
         <div className="px-6 pt-0.5 pb-3">
@@ -100,9 +100,9 @@ export const LoggedIn = () => {
       </div>
 
       <CopyNotification show={copied} />
-      <ProfileModal 
-        isOpen={isProfileModalOpen} 
-        onClose={() => setIsProfileModalOpen(false)} 
+      <SimpleProfileModal 
+        isOpen={isSimpleProfileModalOpen} 
+        onClose={() => setIsSimpleProfileModalOpen(false)} 
       />
     </>
   );
