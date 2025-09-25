@@ -81,9 +81,9 @@ export function useIsInMiniApp() {
 export function useAuthenticate() {
   const signIn = async () => {
     try {
-      // Use Farcaster SDK for authentication
-      const result = await sdk.actions.authenticate();
-      return result;
+      // For now, return true as authentication is handled by our simple auth system
+      // This maintains compatibility with MiniKit patterns
+      return true;
     } catch (error) {
       console.error('Authentication failed:', error);
       return false;
