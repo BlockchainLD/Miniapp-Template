@@ -6,6 +6,9 @@ import { SettingsContent } from "./settings-content";
 import { MobileTabs } from "./mobile-tabs";
 import { CopyNotification } from "./copy-notification";
 import { useLoggedIn } from "./use-logged-in";
+import { ProfileAvatar } from "../profile-avatar";
+import { ProfileModal } from "../profile-modal";
+import { useState } from "react";
 
 export const LoggedIn = () => {
   const {
@@ -21,15 +24,21 @@ export const LoggedIn = () => {
   } = useLoggedIn();
   
   const isMobile = useIsMobile();
+  const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
 
   if (isMobile) {
     return (
       <>
         <div className="bg-white min-h-screen mb-20 flex flex-col">
-          <TopBar 
-            title="Mini App Template"
-            className="[&_*]:text-black"
-          />
+          <div className="relative">
+            <TopBar 
+              title="Mini App Template"
+              className="[&_*]:text-black"
+            />
+            <div className="absolute top-4 right-4 z-10">
+              <ProfileAvatar onProfileClick={() => setIsProfileModalOpen(true)} />
+            </div>
+          </div>
           <div className="px-6 pt-0.5 pb-3">
             <PoweredByBase />
           </div>
@@ -54,17 +63,26 @@ export const LoggedIn = () => {
 
         <MobileTabs activeTab={activeTab} onTabChange={setActiveTab} />
         <CopyNotification show={copied} isMobile />
+        <ProfileModal 
+          isOpen={isProfileModalOpen} 
+          onClose={() => setIsProfileModalOpen(false)} 
+        />
       </>
     );
   }
 
   return (
     <>
-      <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-        <TopBar 
-          title="Mini App Template"
-          className="[&_*]:text-black"
-        />
+      <div className="bg-white rounded-3xl shadow-2xl overflow-hidden relative">
+        <div className="relative">
+          <TopBar 
+            title="Mini App Template"
+            className="[&_*]:text-black"
+          />
+          <div className="absolute top-4 right-4 z-10">
+            <ProfileAvatar onProfileClick={() => setIsProfileModalOpen(true)} />
+          </div>
+        </div>
         <div className="px-6 pt-0.5 pb-3">
           <PoweredByBase />
         </div>
@@ -82,6 +100,10 @@ export const LoggedIn = () => {
       </div>
 
       <CopyNotification show={copied} />
+      <ProfileModal 
+        isOpen={isProfileModalOpen} 
+        onClose={() => setIsProfileModalOpen(false)} 
+      />
     </>
   );
 };

@@ -8,8 +8,8 @@ export const APP_METADATA = {
         imageUrl: 'https://i.imgur.com/brcnijg.png',
         backgroundColor: '#FFFFFF' 
     },
-    url: process.env.SITE_URL || 'http://localhost:3000',
-    canonicalDomain: new URL(process.env.SITE_URL || 'http://localhost:3000').hostname,
+    url: process.env.SITE_URL || 'https://mini-app-template-n5c68ms2o-ldeangelo77-gmailcoms-projects.vercel.app',
+    canonicalDomain: new URL(process.env.SITE_URL || 'https://mini-app-template-n5c68ms2o-ldeangelo77-gmailcoms-projects.vercel.app').hostname,
     accountAssociation: {
         header: "eyJmaWQiOjYxNiwidHlwZSI6bnVsbCwia2V5IjoiMHg4MzQyQTQ4Njk0QTc0MDQ0MTE2RjMzMGRiNTA1MGEyNjdiMjhkRDg1In0",
         payload: "eyJkb21haW4iOiJiYXNlLW1pbmktYXBwLXRlbXBsYXRlLnZlcmNlbC5hcHAifQ",

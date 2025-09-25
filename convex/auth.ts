@@ -34,11 +34,11 @@ export const createAuth = (
       disabled: optionsOnly,
     },
     baseURL: siteUrl,
-    trustedOrigins: [
-      "http://localhost:3000",
-      "https://base-mini-app-template.vercel.app",
-      ...(process.env.SITE_URL ? [process.env.SITE_URL] : [])
-    ],
+        trustedOrigins: [
+          "http://localhost:3000",
+          "https://mini-app-template-n5c68ms2o-ldeangelo77-gmailcoms-projects.vercel.app",
+          ...(process.env.SITE_URL ? [process.env.SITE_URL] : [])
+        ],
     database: authComponent.adapter(ctx),
     emailAndPassword: {
       enabled: false,
