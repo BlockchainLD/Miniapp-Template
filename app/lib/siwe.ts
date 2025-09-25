@@ -71,7 +71,7 @@ export const performSiweAuth = async (
     console.log('SIWE verification response:', verifyResponse);
     
     if (!verifyResponse?.data?.success) {
-      throw new Error(`SIWE verification failed: ${verifyResponse?.data?.error || 'Server rejected the signature'}`);
+      throw new Error(`SIWE verification failed: Server rejected the signature`);
     }
     
     console.log('SIWE authentication completed successfully');
