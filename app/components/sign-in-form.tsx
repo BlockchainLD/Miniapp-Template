@@ -93,7 +93,7 @@ export function SignInForm() {
       }
 
       // If connected but not authenticated, authenticate
-      if (isConnected && address && !isAuthenticated && authState !== 'authenticating') {
+      if (isConnected && address && !isAuthenticated && authState === 'idle') {
         try {
           console.log('Starting auto-authentication with address:', address);
           hasAttemptedAuth.current = true;
