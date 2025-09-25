@@ -1,3 +1,5 @@
+"use client";
+
 // Custom MiniKit-compatible context implementation
 // Following Base Mini App Context documentation patterns
 // without using the problematic OnchainKitProvider
