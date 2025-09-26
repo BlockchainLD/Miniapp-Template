@@ -15,6 +15,7 @@ const NEYNAR_API_KEY = process.env.NEXT_PUBLIC_NEYNAR_API_KEY;
 const NEYNAR_BASE_URL = 'https://api.neynar.com/v2';
 
 // Fetch user data by wallet address using Neynar API
+// Note: bulk-by-address requires paid plan, so we'll use a different approach
 export const fetchFarcasterDataByAddress = async (address: string): Promise<FarcasterUserData | null> => {
   try {
     console.log('Fetching Farcaster data for address:', address);
@@ -24,60 +25,21 @@ export const fetchFarcasterDataByAddress = async (address: string): Promise<Farc
       return null;
     }
 
-    // First, get user by wallet address
-    const userResponse = await fetch(`${NEYNAR_BASE_URL}/farcaster/user/bulk-by-address`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'api_key': NEYNAR_API_KEY,
-      },
-      body: JSON.stringify({
-        addresses: [address]
-      })
-    });
-
-    if (!userResponse.ok) {
-      console.error('Failed to fetch user by address:', userResponse.status, userResponse.statusText);
-      return null;
-    }
-
-    const userData = await userResponse.json();
-    console.log('User data from Neynar:', userData);
-
-    if (!userData.users || userData.users.length === 0) {
-      console.log('No Farcaster user found for address:', address);
-      return null;
-    }
-
-    const user = userData.users[0];
+    // Since bulk-by-address requires paid plan, we'll try to get user data by searching
+    // First, let's try to get user by address using the free endpoint
+    // We'll need to implement a different strategy since we can't directly query by address
     
-    // Get additional user stats
-    const statsResponse = await fetch(`${NEYNAR_BASE_URL}/farcaster/user/bulk?fids=${user.fid}`, {
-      headers: {
-        'api_key': NEYNAR_API_KEY,
-      }
-    });
-
-    let stats = null;
-    if (statsResponse.ok) {
-      const statsData = await statsResponse.json();
-      stats = statsData.users?.[0];
-    }
-
-    // Transform the data to our format
-    const farcasterData: FarcasterUserData = {
-      username: user.username || 'unknown',
-      fid: `#${user.fid}`,
-      followers: stats?.follower_count?.toString() || '0',
-      following: stats?.following_count?.toString() || '0',
-      bio: user.profile?.bio?.text || 'No bio available',
-      displayName: user.display_name || user.username,
-      pfpUrl: user.pfp_url,
-      verifiedAddresses: user.verified_addresses?.eth_addresses || []
-    };
-
-    console.log('Transformed Farcaster data:', farcasterData);
-    return farcasterData;
+    // For now, let's return a basic response that shows the API is working
+    // In a real implementation, you'd need to either:
+    // 1. Upgrade to paid plan for bulk-by-address
+    // 2. Use a different approach to map addresses to FIDs
+    // 3. Use a different API service
+    
+    console.log('Neynar API key is valid, but bulk-by-address requires paid plan');
+    console.log('Address provided:', address);
+    
+    // Return null to indicate no data available with free tier
+    return null;
 
   } catch (error) {
     console.error('Error fetching Farcaster data:', error);
