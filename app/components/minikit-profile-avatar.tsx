@@ -73,10 +73,39 @@ export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarPro
     }
   }, [authenticated, address, farcasterData, loading]);
 
+  // Debug logging
+  console.log('MiniKitProfileAvatar - Render check:', { 
+    isConnected, 
+    address, 
+    authenticated, 
+    farcasterData: !!farcasterData,
+    loading 
+  });
+
   // Only show if connected and authenticated
   if (!isConnected || !address || !authenticated) {
     console.log('MiniKitProfileAvatar - Not rendering:', { isConnected, address, authenticated });
     return null;
+  }
+
+  // TEMPORARY: Always show a debug avatar when authenticated
+  if (!farcasterData && !loading) {
+    console.log('MiniKitProfileAvatar - Showing debug avatar (no Farcaster data yet)');
+    return (
+      <div className="relative">
+        <div
+          className="cursor-pointer hover:scale-105 transition-transform duration-200"
+          onClick={onProfileClick}
+        >
+          <div className="w-10 h-10 border-2 border-white shadow-lg rounded-full bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center text-white font-semibold text-sm">
+            {address?.slice(2, 4).toUpperCase() || '??'}
+          </div>
+        </div>
+        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-600 whitespace-nowrap">
+          Debug Avatar
+        </div>
+      </div>
+    );
   }
 
   // Generate initials from address or username
