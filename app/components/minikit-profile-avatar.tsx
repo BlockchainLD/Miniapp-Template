@@ -5,6 +5,7 @@ import { useAccount } from "wagmi";
 import { sdk } from '@farcaster/miniapp-sdk';
 import { isAuthenticated } from "../lib/simple-auth";
 import { fetchFarcasterDataByAddress, FarcasterUserData } from "../lib/farcaster-api";
+import { CustomBadge } from "./custom-identity";
 
 interface MiniKitProfileAvatarProps {
   onProfileClick?: () => void;
@@ -102,27 +103,43 @@ export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarPro
             <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
           </div>
         ) : farcasterData?.pfpUrl ? (
-          <img
-            src={farcasterData.pfpUrl}
-            alt={farcasterData.displayName || farcasterData.username || 'Profile'}
-            className="w-10 h-10 border-2 border-white shadow-lg hover:shadow-xl transition-shadow duration-200 rounded-full object-cover"
-            onError={(e) => {
-              // Fallback to initials if image fails to load
-              const target = e.target as HTMLImageElement;
-              target.style.display = 'none';
-              const parent = target.parentElement;
-              if (parent) {
-                parent.innerHTML = `
-                  <div class="w-10 h-10 border-2 border-white shadow-lg rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-                    ${getInitials()}
-                  </div>
-                `;
-              }
-            }}
-          />
+          <div className="relative">
+            <img
+              src={farcasterData.pfpUrl}
+              alt={farcasterData.displayName || farcasterData.username || 'Profile'}
+              className="w-10 h-10 border-2 border-white shadow-lg hover:shadow-xl transition-shadow duration-200 rounded-full object-cover"
+              onError={(e) => {
+                // Fallback to initials if image fails to load
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const parent = target.parentElement;
+                if (parent) {
+                  parent.innerHTML = `
+                    <div class="w-10 h-10 border-2 border-white shadow-lg rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                      ${getInitials()}
+                    </div>
+                  `;
+                }
+              }}
+            />
+            {farcasterData.verifiedAddresses?.includes(address.toLowerCase()) && (
+              <CustomBadge 
+                tooltip="Verified Farcaster User"
+                className="absolute -top-1 -right-1 w-4 h-4"
+              />
+            )}
+          </div>
         ) : (
-          <div className="w-10 h-10 border-2 border-white shadow-lg rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
-            {getInitials()}
+          <div className="relative">
+            <div className="w-10 h-10 border-2 border-white shadow-lg rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+              {getInitials()}
+            </div>
+            {farcasterData?.verifiedAddresses?.includes(address.toLowerCase()) && (
+              <CustomBadge 
+                tooltip="Verified Farcaster User"
+                className="absolute -top-1 -right-1 w-4 h-4"
+              />
+            )}
           </div>
         )}
       </div>

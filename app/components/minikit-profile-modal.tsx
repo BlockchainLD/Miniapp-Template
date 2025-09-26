@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { sdk } from '@farcaster/miniapp-sdk';
-// Removed OnchainKit imports - using custom implementation
+import { CustomAddress, CustomBadge } from "./custom-identity";
 import { isAuthenticated, signOut } from "../lib/simple-auth";
 import { fetchFarcasterDataByAddress, FarcasterUserData } from "../lib/farcaster-api";
 import { Typography, Button } from "@worldcoin/mini-apps-ui-kit-react";
@@ -121,27 +121,43 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
                 <div className="w-8 h-8 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
               </div>
             ) : farcasterData?.pfpUrl ? (
-              <img
-                src={farcasterData.pfpUrl}
-                alt={farcasterData.displayName || farcasterData.username || 'Profile'}
-                className="w-20 h-20 border-4 border-blue-100 shadow-lg rounded-full object-cover"
-                onError={(e) => {
-                  // Fallback to initials if image fails to load
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const parent = target.parentElement;
-                  if (parent) {
-                    parent.innerHTML = `
-                      <div class="w-20 h-20 border-4 border-blue-100 shadow-lg rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl">
-                        ${getInitials()}
-                      </div>
-                    `;
-                  }
-                }}
-              />
+              <div className="relative">
+                <img
+                  src={farcasterData.pfpUrl}
+                  alt={farcasterData.displayName || farcasterData.username || 'Profile'}
+                  className="w-20 h-20 border-4 border-blue-100 shadow-lg rounded-full object-cover"
+                  onError={(e) => {
+                    // Fallback to initials if image fails to load
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                    const parent = target.parentElement;
+                    if (parent) {
+                      parent.innerHTML = `
+                        <div class="w-20 h-20 border-4 border-blue-100 shadow-lg rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl">
+                          ${getInitials()}
+                        </div>
+                      `;
+                    }
+                  }}
+                />
+                {farcasterData.verifiedAddresses?.includes(address.toLowerCase()) && (
+                  <CustomBadge 
+                    tooltip="Verified Farcaster User"
+                    className="absolute -top-1 -right-1 w-6 h-6"
+                  />
+                )}
+              </div>
             ) : (
-              <div className="w-20 h-20 border-4 border-blue-100 shadow-lg rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl">
-                {getInitials()}
+              <div className="relative">
+                <div className="w-20 h-20 border-4 border-blue-100 shadow-lg rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl">
+                  {getInitials()}
+                </div>
+                {farcasterData?.verifiedAddresses?.includes(address.toLowerCase()) && (
+                  <CustomBadge 
+                    tooltip="Verified Farcaster User"
+                    className="absolute -top-1 -right-1 w-6 h-6"
+                  />
+                )}
               </div>
             )}
 
@@ -149,86 +165,111 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
               <Typography variant="heading" className="text-xl font-semibold text-gray-900">
                 {farcasterData?.displayName || farcasterData?.username || 'Unknown User'}
                 {farcasterData?.verifiedAddresses?.includes(address.toLowerCase()) && (
-                  <span className="ml-2 text-blue-600" title="Verified Farcaster User">✓</span>
+                  <CustomBadge tooltip="Verified Farcaster User" />
                 )}
               </Typography>
 
-              <Typography variant="body" className="text-sm text-gray-500 font-mono">
-                {address}
-              </Typography>
+              <CustomAddress 
+                address={address}
+                className="text-sm text-gray-500 font-mono"
+                isSliced={false}
+              />
             </div>
           </div>
+
+          {/* Farcaster Data Section */}
+          {farcasterData && (
+            <div className="bg-blue-50 rounded-2xl p-4 space-y-3">
+              <Typography variant="heading" className="text-gray-900 text-lg">
+                Farcaster Profile
+              </Typography>
+              
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <Typography variant="body" className="text-gray-600">
+                    Username:
+                  </Typography>
+                  <Typography variant="body" className="text-gray-900 font-medium">
+                    @{farcasterData.username}
+                  </Typography>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <Typography variant="body" className="text-gray-600">
+                    FID:
+                  </Typography>
+                  <Typography variant="body" className="text-gray-900 font-medium">
+                    {farcasterData.fid}
+                  </Typography>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <Typography variant="body" className="text-gray-600">
+                    Followers:
+                  </Typography>
+                  <Typography variant="body" className="text-gray-900 font-medium">
+                    {farcasterData.followers}
+                  </Typography>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <Typography variant="body" className="text-gray-600">
+                    Following:
+                  </Typography>
+                  <Typography variant="body" className="text-gray-900 font-medium">
+                    {farcasterData.following}
+                  </Typography>
+                </div>
+              </div>
+
+              {farcasterData.bio && (
+                <div className="mt-3 pt-3 border-t border-blue-200">
+                  <Typography variant="body" className="text-gray-600 text-sm">
+                    {farcasterData.bio}
+                  </Typography>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Profile Details */}
           <div className="space-y-4">
             <div className="bg-gray-50 rounded-2xl p-4 space-y-3">
               <Typography variant="heading" className="text-gray-900 text-lg">
-                Farcaster Data
+                Wallet Information
               </Typography>
               
-              {loading ? (
-                <div className="flex items-center justify-center py-4">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                  <Typography variant="body" className="text-gray-600 ml-2">
-                    Loading Farcaster data...
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <Typography variant="body" className="text-gray-600">
+                    Address:
+                  </Typography>
+                  <Typography variant="body" className="text-gray-900 font-medium font-mono text-sm">
+                    {address}
                   </Typography>
                 </div>
-              ) : farcasterData ? (
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <Typography variant="body" className="text-gray-600">
-                      Username:
-                    </Typography>
-                    <Typography variant="body" className="text-gray-900 font-medium">
-                      @{farcasterData.username}
-                    </Typography>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <Typography variant="body" className="text-gray-600">
-                      FID:
-                    </Typography>
-                    <Typography variant="body" className="text-gray-900 font-medium">
-                      {farcasterData.fid}
-                    </Typography>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <Typography variant="body" className="text-gray-600">
-                      Followers:
-                    </Typography>
-                    <Typography variant="body" className="text-gray-900 font-medium">
-                      {farcasterData.followers}
-                    </Typography>
-                  </div>
-                  
-                  <div className="flex justify-between items-center">
-                    <Typography variant="body" className="text-gray-600">
-                      Following:
-                    </Typography>
-                    <Typography variant="body" className="text-gray-900 font-medium">
-                      {farcasterData.following}
-                    </Typography>
-                  </div>
-                </div>
-              ) : (
-                <Typography variant="body" className="text-gray-500">
-                  No Farcaster data available
-                </Typography>
-              )}
-            </div>
 
-            {/* Bio */}
-            {farcasterData && (
-              <div className="bg-gray-50 rounded-2xl p-4">
-                <Typography variant="heading" className="text-gray-900 text-lg mb-2">
-                  Bio
-                </Typography>
-                <Typography variant="body" className="text-gray-600">
-                  {farcasterData.bio}
-                </Typography>
+                <div className="flex justify-between items-center">
+                  <Typography variant="body" className="text-gray-600">
+                    Network:
+                  </Typography>
+                  <Typography variant="body" className="text-gray-900 font-medium">
+                    Base
+                  </Typography>
+                </div>
+
+                {farcasterData?.verifiedAddresses?.includes(address.toLowerCase()) && (
+                  <div className="flex justify-between items-center">
+                    <Typography variant="body" className="text-gray-600">
+                      Status:
+                    </Typography>
+                    <Typography variant="body" className="text-green-600 font-medium">
+                      ✓ Verified on Farcaster
+                    </Typography>
+                  </div>
+                )}
               </div>
-            )}
+            </div>
           </div>
 
           {/* Actions */}
