@@ -1,33 +1,42 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { MiniKitSignInForm } from "./components/minikit-sign-in-form";
 import { LoggedIn } from "./components/logged-in";
 import { SafeAreaView } from "@worldcoin/mini-apps-ui-kit-react";
 import { useIsMobile } from "./hooks/use-is-mobile";
 import { useAccount } from "wagmi";
 import { isAuthenticated } from "./lib/simple-auth";
-import { useMiniKit, useIsInMiniApp } from "@coinbase/onchainkit/minikit";
+import { sdk } from '@farcaster/miniapp-sdk';
 
 export default function Home() {
   const isMobile = useIsMobile();
   const { isConnected, address } = useAccount();
-  const { context, setFrameReady, isFrameReady } = useMiniKit();
-  const { isInMiniApp } = useIsInMiniApp();
+  const [isInMiniApp, setIsInMiniApp] = useState(false);
   const authenticated = isAuthenticated();
 
-  // Initialize frame readiness as per documentation
+  // Initialize Farcaster SDK
   useEffect(() => {
-    if (!isFrameReady) {
-      setFrameReady();
-    }
-  }, [setFrameReady, isFrameReady]);
+    const initializeSDK = async () => {
+      try {
+        const inMiniApp = await sdk.isInMiniApp();
+        setIsInMiniApp(inMiniApp);
+        
+        if (inMiniApp) {
+          await sdk.actions.ready();
+        }
+      } catch (error) {
+        console.error('Failed to initialize Farcaster SDK:', error);
+      }
+    };
+    
+    initializeSDK();
+  }, []);
 
   // Debug: Add authentication state logging
   console.log('Home component rendering, isMobile:', isMobile);
   console.log('MiniKit Auth - authenticated:', authenticated);
   console.log('Wagmi - isConnected:', isConnected, 'address:', address);
-  console.log('MiniKit Context:', context);
   console.log('Is in Mini App:', isInMiniApp);
 
   const AppContent = () => {

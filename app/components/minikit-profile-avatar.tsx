@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
-import { useMiniKit, useAuthenticate, useIsInMiniApp } from "@coinbase/onchainkit/minikit";
-import { Avatar, Identity, Name, Badge } from "@coinbase/onchainkit/identity";
+import { sdk } from '@farcaster/miniapp-sdk';
+import { Avatar, Identity } from "@coinbase/onchainkit/identity";
 import { isAuthenticated } from "../lib/simple-auth";
 
 interface MiniKitProfileAvatarProps {
@@ -12,11 +12,23 @@ interface MiniKitProfileAvatarProps {
 
 export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarProps) {
   const { address, isConnected } = useAccount();
-  const { context } = useMiniKit();
-  const { signIn } = useAuthenticate();
-  const { isInMiniApp } = useIsInMiniApp();
+  const [isInMiniApp, setIsInMiniApp] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
+
+  // Initialize Farcaster SDK and check auth
+  useEffect(() => {
+    const initializeSDK = async () => {
+      try {
+        const inMiniApp = await sdk.isInMiniApp();
+        setIsInMiniApp(inMiniApp);
+      } catch (error) {
+        console.error('Failed to initialize Farcaster SDK:', error);
+      }
+    };
+    
+    initializeSDK();
+  }, []);
 
   // Check authentication state
   useEffect(() => {

@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@worldcoin/mini-apps-ui-kit-react/styles.css";
-import "@coinbase/onchainkit/styles.css";
 import { APP_METADATA, fcMiniAppEmbed } from "./lib/utils";
 import { Toaster } from "@worldcoin/mini-apps-ui-kit-react";
-import { RootProvider } from "./providers/root-provider";
+import { Provider as WagmiProvider } from './providers/wagmi-provider';
+import { ConvexClientProvider } from "./providers/convex-client-provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,10 +38,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <RootProvider>
-          {children}
-          <Toaster />
-        </RootProvider>
+        <WagmiProvider>
+          <ConvexClientProvider>
+            {children}
+            <Toaster />
+          </ConvexClientProvider>
+        </WagmiProvider>
         
         {/* Farcaster Mini App SDK Ready Signal */}
         <script type="module" dangerouslySetInnerHTML={{
