@@ -10,35 +10,67 @@ export interface FarcasterUserData {
   verifiedAddresses?: string[];
 }
 
-// Neynar API configuration
-const NEYNAR_API_KEY = process.env.NEXT_PUBLIC_NEYNAR_API_KEY;
-const NEYNAR_BASE_URL = 'https://api.neynar.com/v2';
+// Warpcast API configuration (FREE!)
+const WARPCAST_BASE_URL = 'https://client.warpcast.com/v2';
 
-// Fetch user data by wallet address using Neynar API
-// Note: bulk-by-address requires paid plan, so we'll use a different approach
+// Fetch user data by wallet address using Warpcast API (FREE!)
+// Strategy: We can't query directly by address, but we can get user data and check if the address matches
 export const fetchFarcasterDataByAddress = async (address: string): Promise<FarcasterUserData | null> => {
   try {
     console.log('Fetching Farcaster data for address:', address);
     
-    if (!NEYNAR_API_KEY) {
-      console.error('Neynar API key not found - cannot fetch Farcaster data');
-      return null;
+    // Since we can't query by address directly, we'll need a different approach
+    // For now, let's try some common FIDs and see if any match the wallet address
+    // In a real implementation, you might want to maintain a cache or use a different strategy
+    
+    const commonFids = [1, 2, 3, 5, 6, 7, 8, 9, 10]; // Start with some known active users
+    
+    for (const fid of commonFids) {
+      try {
+        const response = await fetch(`${WARPCAST_BASE_URL}/user?fid=${fid}`);
+        
+        if (!response.ok) {
+          continue; // Skip this FID
+        }
+        
+        const data = await response.json();
+        console.log(`Checking FID ${fid}:`, data.result?.user?.username);
+        
+        if (data.result?.extras?.ethWallets) {
+          const ethWallets = data.result.extras.ethWallets;
+          
+          // Check if the provided address matches any of the user's wallets
+          const addressMatch = ethWallets.some((wallet: string) => 
+            wallet.toLowerCase() === address.toLowerCase()
+          );
+          
+          if (addressMatch) {
+            console.log('Found matching user!', data.result.user.username);
+            
+            // Transform the data to our format
+            const user = data.result.user;
+            const farcasterData: FarcasterUserData = {
+              username: user.username || 'unknown',
+              fid: `#${fid}`,
+              followers: user.followerCount?.toString() || '0',
+              following: user.followingCount?.toString() || '0',
+              bio: user.profile?.bio?.text || 'No bio available',
+              displayName: user.displayName || user.username,
+              pfpUrl: user.pfp?.url,
+              verifiedAddresses: data.result.extras?.ethWallets || []
+            };
+            
+            console.log('Transformed Farcaster data:', farcasterData);
+            return farcasterData;
+          }
+        }
+      } catch (fidError) {
+        console.error(`Error checking FID ${fid}:`, fidError);
+        continue;
+      }
     }
-
-    // Since bulk-by-address requires paid plan, we'll try to get user data by searching
-    // First, let's try to get user by address using the free endpoint
-    // We'll need to implement a different strategy since we can't directly query by address
     
-    // For now, let's return a basic response that shows the API is working
-    // In a real implementation, you'd need to either:
-    // 1. Upgrade to paid plan for bulk-by-address
-    // 2. Use a different approach to map addresses to FIDs
-    // 3. Use a different API service
-    
-    console.log('Neynar API key is valid, but bulk-by-address requires paid plan');
-    console.log('Address provided:', address);
-    
-    // Return null to indicate no data available with free tier
+    console.log('No matching Farcaster user found for address:', address);
     return null;
 
   } catch (error) {
@@ -47,21 +79,12 @@ export const fetchFarcasterDataByAddress = async (address: string): Promise<Farc
   }
 };
 
-// Alternative method: Fetch user by FID if we have it
+// Alternative method: Fetch user by FID using Warpcast API (FREE!)
 export const fetchFarcasterDataByFid = async (fid: string): Promise<FarcasterUserData | null> => {
   try {
     console.log('Fetching Farcaster data for FID:', fid);
     
-    if (!NEYNAR_API_KEY) {
-      console.error('Neynar API key not found - cannot fetch Farcaster data');
-      return null;
-    }
-
-    const response = await fetch(`${NEYNAR_BASE_URL}/farcaster/user/bulk?fids=${fid}`, {
-      headers: {
-        'api_key': NEYNAR_API_KEY,
-      }
-    });
+    const response = await fetch(`${WARPCAST_BASE_URL}/user?fid=${fid}`);
 
     if (!response.ok) {
       console.error('Failed to fetch user by FID:', response.status, response.statusText);
@@ -69,25 +92,25 @@ export const fetchFarcasterDataByFid = async (fid: string): Promise<FarcasterUse
     }
 
     const data = await response.json();
-    console.log('User data from Neynar by FID:', data);
+    console.log('User data from Warpcast by FID:', data);
 
-    if (!data.users || data.users.length === 0) {
+    if (!data.result?.user) {
       console.log('No Farcaster user found for FID:', fid);
       return null;
     }
 
-    const user = data.users[0];
+    const user = data.result.user;
     
     // Transform the data to our format
     const farcasterData: FarcasterUserData = {
       username: user.username || 'unknown',
-      fid: `#${user.fid}`,
-      followers: user.follower_count?.toString() || '0',
-      following: user.following_count?.toString() || '0',
+      fid: `#${fid}`,
+      followers: user.followerCount?.toString() || '0',
+      following: user.followingCount?.toString() || '0',
       bio: user.profile?.bio?.text || 'No bio available',
-      displayName: user.display_name || user.username,
-      pfpUrl: user.pfp_url,
-      verifiedAddresses: user.verified_addresses?.eth_addresses || []
+      displayName: user.displayName || user.username,
+      pfpUrl: user.pfp?.url,
+      verifiedAddresses: data.result.extras?.ethWallets || []
     };
 
     console.log('Transformed Farcaster data by FID:', farcasterData);
