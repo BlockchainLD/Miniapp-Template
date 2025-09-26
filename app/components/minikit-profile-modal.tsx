@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useAccount } from "wagmi";
 import { sdk } from '@farcaster/miniapp-sdk';
-import { Avatar, Identity, Name, Badge, Address } from "@coinbase/onchainkit/identity";
+// Removed OnchainKit imports - using custom implementation
 import { isAuthenticated, signOut } from "../lib/simple-auth";
 import { fetchFarcasterDataByAddress, FarcasterUserData } from "../lib/farcaster-api";
 import { Typography, Button } from "@worldcoin/mini-apps-ui-kit-react";
@@ -80,8 +80,16 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
     return null;
   }
 
-  // Schema ID for EAS attestation - this should be your app's schema
-  const schemaId = "0xf8b05c79f090979bf4a80270aba232dff11a10d9ca55c4f88de95317970f0de9";
+  // Generate initials from address or username
+  const getInitials = () => {
+    if (farcasterData?.displayName) {
+      return farcasterData.displayName.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+    }
+    if (farcasterData?.username) {
+      return farcasterData.username.slice(0, 2).toUpperCase();
+    }
+    return address?.slice(2, 4).toUpperCase() || '??';
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -106,22 +114,48 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
 
         {/* Profile Content */}
         <div className="space-y-6">
-          {/* Avatar and Name using OnchainKit Identity */}
+          {/* Avatar and Name */}
           <div className="flex flex-col items-center space-y-4">
-            <Identity address={address} schemaId={schemaId}>
-              <Avatar className="w-20 h-20 border-4 border-blue-100 shadow-lg" />
-            </Identity>
-            
+            {loading ? (
+              <div className="w-20 h-20 border-4 border-blue-100 shadow-lg rounded-full bg-gray-200 animate-pulse flex items-center justify-center">
+                <div className="w-8 h-8 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : farcasterData?.pfpUrl ? (
+              <img
+                src={farcasterData.pfpUrl}
+                alt={farcasterData.displayName || farcasterData.username || 'Profile'}
+                className="w-20 h-20 border-4 border-blue-100 shadow-lg rounded-full object-cover"
+                onError={(e) => {
+                  // Fallback to initials if image fails to load
+                  const target = e.target as HTMLImageElement;
+                  target.style.display = 'none';
+                  const parent = target.parentElement;
+                  if (parent) {
+                    parent.innerHTML = `
+                      <div class="w-20 h-20 border-4 border-blue-100 shadow-lg rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl">
+                        ${getInitials()}
+                      </div>
+                    `;
+                  }
+                }}
+              />
+            ) : (
+              <div className="w-20 h-20 border-4 border-blue-100 shadow-lg rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-2xl">
+                {getInitials()}
+              </div>
+            )}
+
             <div className="text-center space-y-2">
-              <Identity address={address} schemaId={schemaId}>
-                <Name className="text-xl font-semibold text-gray-900">
-                  <Badge tooltip="Verified Farcaster User" />
-                </Name>
-              </Identity>
-              
-              <Identity address={address} schemaId={schemaId}>
-                <Address className="text-sm text-gray-500 font-mono" />
-              </Identity>
+              <Typography variant="heading" className="text-xl font-semibold text-gray-900">
+                {farcasterData?.displayName || farcasterData?.username || 'Unknown User'}
+                {farcasterData?.verifiedAddresses?.includes(address.toLowerCase()) && (
+                  <span className="ml-2 text-blue-600" title="Verified Farcaster User">✓</span>
+                )}
+              </Typography>
+
+              <Typography variant="body" className="text-sm text-gray-500 font-mono">
+                {address}
+              </Typography>
             </div>
           </div>
 
