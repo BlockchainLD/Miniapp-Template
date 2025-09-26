@@ -20,8 +20,8 @@ export const fetchFarcasterDataByAddress = async (address: string): Promise<Farc
     console.log('Fetching Farcaster data for address:', address);
     
     if (!NEYNAR_API_KEY) {
-      console.warn('Neynar API key not found, using mock data');
-      return await getMockFarcasterData(address);
+      console.error('Neynar API key not found - cannot fetch Farcaster data');
+      return null;
     }
 
     // First, get user by wallet address
@@ -37,8 +37,8 @@ export const fetchFarcasterDataByAddress = async (address: string): Promise<Farc
     });
 
     if (!userResponse.ok) {
-      console.error('Failed to fetch user by address:', userResponse.status);
-      return await getMockFarcasterData(address);
+      console.error('Failed to fetch user by address:', userResponse.status, userResponse.statusText);
+      return null;
     }
 
     const userData = await userResponse.json();
@@ -46,7 +46,7 @@ export const fetchFarcasterDataByAddress = async (address: string): Promise<Farc
 
     if (!userData.users || userData.users.length === 0) {
       console.log('No Farcaster user found for address:', address);
-      return await getMockFarcasterData(address);
+      return null;
     }
 
     const user = userData.users[0];
@@ -81,7 +81,7 @@ export const fetchFarcasterDataByAddress = async (address: string): Promise<Farc
 
   } catch (error) {
     console.error('Error fetching Farcaster data:', error);
-    return await getMockFarcasterData(address);
+    return null;
   }
 };
 
@@ -91,8 +91,8 @@ export const fetchFarcasterDataByFid = async (fid: string): Promise<FarcasterUse
     console.log('Fetching Farcaster data for FID:', fid);
     
     if (!NEYNAR_API_KEY) {
-      console.warn('Neynar API key not found, using mock data');
-      return await getMockFarcasterData();
+      console.error('Neynar API key not found - cannot fetch Farcaster data');
+      return null;
     }
 
     const response = await fetch(`${NEYNAR_BASE_URL}/farcaster/user/bulk?fids=${fid}`, {
@@ -102,8 +102,8 @@ export const fetchFarcasterDataByFid = async (fid: string): Promise<FarcasterUse
     });
 
     if (!response.ok) {
-      console.error('Failed to fetch user by FID:', response.status);
-      return await getMockFarcasterData();
+      console.error('Failed to fetch user by FID:', response.status, response.statusText);
+      return null;
     }
 
     const data = await response.json();
@@ -111,7 +111,7 @@ export const fetchFarcasterDataByFid = async (fid: string): Promise<FarcasterUse
 
     if (!data.users || data.users.length === 0) {
       console.log('No Farcaster user found for FID:', fid);
-      return await getMockFarcasterData();
+      return null;
     }
 
     const user = data.users[0];
@@ -133,28 +133,11 @@ export const fetchFarcasterDataByFid = async (fid: string): Promise<FarcasterUse
 
   } catch (error) {
     console.error('Error fetching Farcaster data by FID:', error);
-    return await getMockFarcasterData();
+    return null;
   }
 };
 
-// Mock data fallback
-const getMockFarcasterData = async (address?: string): Promise<FarcasterUserData> => {
-  console.log('Using mock Farcaster data for address:', address);
-  
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  return {
-    username: "base_builder",
-    fid: "#12345",
-    followers: "1,234",
-    following: "567",
-    bio: "Building the future of decentralized social media on Base! 🚀",
-    displayName: "Base Builder",
-    pfpUrl: undefined,
-    verifiedAddresses: address ? [address] : []
-  };
-};
+// Neynar API is ready to use - just need the API key
 
 // Check if a wallet address is verified on Farcaster
 export const isWalletVerifiedOnFarcaster = async (address: string): Promise<boolean> => {
