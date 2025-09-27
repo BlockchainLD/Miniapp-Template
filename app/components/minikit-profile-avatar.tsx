@@ -62,12 +62,23 @@ export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarPro
   // Fetch Farcaster data when authenticated
   useEffect(() => {
     if (authenticated && address && !farcasterData && !loading) {
+      console.log('MiniKitProfileAvatar - Starting Farcaster data fetch for:', address);
       setLoading(true);
+      
+      // Add timeout to prevent hanging
+      const timeoutId = setTimeout(() => {
+        console.log('MiniKitProfileAvatar - Farcaster data fetch timed out after 30 seconds');
+        setLoading(false);
+      }, 30000); // 30 second timeout
+      
       fetchFarcasterDataByAddress(address).then((data) => {
+        clearTimeout(timeoutId);
+        console.log('MiniKitProfileAvatar - Farcaster data fetch result:', data);
         setFarcasterData(data);
         setLoading(false);
       }).catch((error) => {
-        console.error('Failed to load Farcaster data for avatar:', error);
+        clearTimeout(timeoutId);
+        console.error('MiniKitProfileAvatar - Failed to load Farcaster data:', error);
         setLoading(false);
       });
     }
@@ -88,22 +99,22 @@ export function MiniKitProfileAvatar({ onProfileClick }: MiniKitProfileAvatarPro
     return null;
   }
 
-  // TEMPORARY: Always show a debug avatar when authenticated
+  // Show avatar immediately when authenticated, even without Farcaster data
+  // This ensures the avatar is always visible while Farcaster data loads in background
   if (!farcasterData && !loading) {
-    console.log('MiniKitProfileAvatar - Showing debug avatar (no Farcaster data yet)');
+    console.log('MiniKitProfileAvatar - Showing immediate avatar (Farcaster data loading in background)');
     return (
       <div className="relative">
         <div
           className="cursor-pointer hover:scale-105 transition-transform duration-200"
           onClick={onProfileClick}
         >
-          <div className="w-10 h-10 border-2 border-white shadow-lg rounded-full bg-gradient-to-br from-green-500 to-blue-600 flex items-center justify-center text-white font-semibold text-sm">
+          <div className="w-10 h-10 border-2 border-white shadow-lg rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
             {address?.slice(2, 4).toUpperCase() || '??'}
           </div>
         </div>
-        <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-xs text-gray-600 whitespace-nowrap">
-          Debug Avatar
-        </div>
+        {/* Show a small indicator that Farcaster data is being fetched */}
+        <div className="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400 rounded-full animate-pulse"></div>
       </div>
     );
   }
