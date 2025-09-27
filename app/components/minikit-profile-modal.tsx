@@ -19,7 +19,7 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
   const [authenticated, setAuthenticated] = useState(false);
   const [farcasterData, setFarcasterData] = useState<FarcasterUserData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isVerified, setIsVerified] = useState(false);
+  // const [isVerified, setIsVerified] = useState(false);
 
   // Initialize Farcaster SDK and check auth
   useEffect(() => {
@@ -65,11 +65,11 @@ export function MiniKitProfileModal({ isOpen, onClose }: MiniKitProfileModalProp
   useEffect(() => {
     if (isOpen && authenticated && address) {
       setLoading(true);
-      fetchFarcasterDataByAddress(address).then((data) => {
-        setFarcasterData(data);
-        setIsVerified(data?.verifiedAddresses?.includes(address.toLowerCase()) || false);
-        setLoading(false);
-      }).catch((error) => {
+             fetchFarcasterDataByAddress(address).then((data) => {
+               setFarcasterData(data);
+               // setIsVerified(data?.verifiedAddresses?.includes(address.toLowerCase()) || false);
+               setLoading(false);
+             }).catch((error) => {
         console.error('Failed to load Farcaster data:', error);
         setLoading(false);
       });

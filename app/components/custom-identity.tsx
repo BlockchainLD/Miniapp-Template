@@ -11,7 +11,7 @@ interface CustomIdentityProps {
   className?: string;
 }
 
-export function CustomIdentity({ address, children, className }: CustomIdentityProps) {
+export function CustomIdentity({ children, className }: CustomIdentityProps) {
   return (
     <div className={className}>
       {children}

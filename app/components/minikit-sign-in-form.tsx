@@ -14,7 +14,7 @@ export function MiniKitSignInForm() {
   
   // Farcaster SDK hooks
   const [isInMiniApp, setIsInMiniApp] = useState(false);
-  const [isFrameReady, setIsFrameReady] = useState(false);
+  // const [isFrameReady, setIsFrameReady] = useState(false);
   
   // Wagmi hooks
   const { address, isConnected } = useAccount();
@@ -27,10 +27,10 @@ export function MiniKitSignInForm() {
         const inMiniApp = await sdk.isInMiniApp();
         setIsInMiniApp(inMiniApp);
         
-        if (inMiniApp) {
-          await sdk.actions.ready();
-          setIsFrameReady(true);
-        }
+               if (inMiniApp) {
+                 await sdk.actions.ready();
+                 // setIsFrameReady(true);
+               }
       } catch (error) {
         console.error('Failed to initialize Farcaster SDK:', error);
       }
