@@ -69,36 +69,15 @@ const setCachedUser = (fid: number, data: WarpcastResponse) => {
 // Strategy: We can't query directly by address, but we can get user data and check if the address matches
 export const fetchFarcasterDataByAddress = async (address: string): Promise<FarcasterUserData | null> => {
   try {
-    console.log('Fetching Farcaster data for address:', address);
+    console.log('🔍 TESTING MODE: Fetching Farcaster data for address:', address);
+    console.log('🎯 Only checking FID 838 for fast testing');
     
     // Since we can't query by address directly, we'll need a different approach
     // For now, let's try some common FIDs and see if any match the wallet address
     // In a real implementation, you might want to maintain a cache or use a different strategy
     
-    // Smart FID selection: Start with most likely candidates
-    // This covers early adopters, popular users, and active community members
-    const commonFids = [
-      // Early adopters (most likely to have verified addresses)
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
-      21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
-      41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60,
-      61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80,
-      81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95, 96, 97, 98, 99, 100,
-      // Popular users (101-200)
-      101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116, 117, 118, 119, 120,
-      121, 122, 123, 124, 125, 126, 127, 128, 129, 130, 131, 132, 133, 134, 135, 136, 137, 138, 139, 140,
-      141, 142, 143, 144, 145, 146, 147, 148, 149, 150, 151, 152, 153, 154, 155, 156, 157, 158, 159, 160,
-      161, 162, 163, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 178, 179, 180,
-      181, 182, 183, 184, 185, 186, 187, 188, 189, 190, 191, 192, 193, 194, 195, 196, 197, 198, 199, 200,
-      // Active community (201-500) - sample every 5th FID for efficiency
-      201, 206, 211, 216, 221, 226, 231, 236, 241, 246, 251, 256, 261, 266, 271, 276, 281, 286, 291, 296,
-      301, 306, 311, 316, 321, 326, 331, 336, 341, 346, 351, 356, 361, 366, 371, 376, 381, 386, 391, 396,
-      401, 406, 411, 416, 421, 426, 431, 436, 441, 446, 451, 456, 461, 466, 471, 476, 481, 486, 491, 496,
-      // Extended range (501-1000) - sample every 10th FID for efficiency
-      501, 511, 521, 531, 541, 551, 561, 571, 581, 591, 601, 611, 621, 631, 641, 651, 661, 671, 681, 691,
-      701, 711, 721, 731, 741, 751, 761, 771, 781, 791, 801, 811, 821, 831, 841, 851, 861, 871, 881, 891,
-      901, 911, 921, 931, 941, 951, 961, 971, 981, 991
-    ];
+    // TESTING MODE: Only check FID 838 for faster testing
+    const commonFids = [838];
     
     // Process FIDs in batches to avoid overwhelming the API
     const batchSize = 10;
