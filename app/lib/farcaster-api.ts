@@ -70,7 +70,7 @@ const setCachedUser = (fid: number, data: WarpcastResponse) => {
 export const fetchFarcasterDataByAddress = async (address: string): Promise<FarcasterUserData | null> => {
   try {
     console.log('🔍 TESTING MODE: Fetching Farcaster data for address:', address);
-    console.log('🎯 Only checking FID 838 for fast testing');
+    console.log('🎯 Only checking FID 838 for fast testing - DEPLOYMENT TRIGGER');
     
     // Since we can't query by address directly, we'll need a different approach
     // For now, let's try some common FIDs and see if any match the wallet address
