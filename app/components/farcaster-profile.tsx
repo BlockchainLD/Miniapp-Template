@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useFarcaster } from "./auto-connect-wrapper";
 import { Typography, Spinner } from "@worldcoin/mini-apps-ui-kit-react";
 
@@ -103,9 +104,11 @@ export function FarcasterProfile() {
   return (
     <div className="bg-white rounded-lg p-4 space-y-4">
       <div className="flex items-center space-x-3">
-        <img
+        <Image
           src={farcasterData.pfp.url}
           alt={farcasterData.displayName}
+          width={48}
+          height={48}
           className="w-12 h-12 rounded-full"
         />
         <div className="flex-1">

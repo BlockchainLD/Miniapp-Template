@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "@worldcoin/mini-apps-ui-kit-react/styles.css";
-import { SimpleProvider } from "./providers/simple-provider";
+import { ConvexClientProvider } from "./providers/convex-client-provider";
 import { Provider as WagmiProvider } from './providers/wagmi-provider';
 import { APP_METADATA, fcMiniAppEmbed } from "./lib/utils";
 import { Toaster } from "@worldcoin/mini-apps-ui-kit-react";
@@ -39,10 +39,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <WagmiProvider>
-          <SimpleProvider>
+          <ConvexClientProvider>
             {children}
             <Toaster />
-          </SimpleProvider>
+          </ConvexClientProvider>
         </WagmiProvider>
       </body>
     </html>

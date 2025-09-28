@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useAccount, useDisconnect } from "wagmi";
 
 export const useLoggedIn = () => {
-  const { address, isConnected } = useAccount();
+  const { address } = useAccount();
   const { disconnect } = useDisconnect();
   const [copied, setCopied] = useState<boolean>(false);
   const [copiedUserId, setCopiedUserId] = useState<boolean>(false);
