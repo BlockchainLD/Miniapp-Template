@@ -1,48 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { SignInWithBaseButton } from "@base-org/account-ui/react";
-import { useAccount, useConnect, useSignMessage } from "wagmi";
+import { useAccount, useConnect } from "wagmi";
 import { 
   Typography, 
   Spinner
 } from "@worldcoin/mini-apps-ui-kit-react";
-import { useConvexAuth } from "convex/react";
-import { performSiweAuth } from "../lib/siwe";
 
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { isAuthenticated } = useConvexAuth();
   const { address, isConnected } = useAccount();
   const { connectAsync, connectors } = useConnect();
-  const { signMessageAsync } = useSignMessage();
 
-  useEffect(() => {
-    if (isAuthenticated) {
-      setIsLoading(false);
-    }
-  }, [isAuthenticated]);
-
-  const handleSiweSignIn = async () => {
+  const handleWalletConnect = async () => {
     setIsLoading(true);
     
     try {
-      let walletAddress = address;
-      
-      if (!isConnected || !walletAddress) {
+      if (!isConnected || !address) {
         const result = await connectAsync({ connector: connectors[0] });
-        walletAddress = result.accounts[0];
+        console.log('Connected to wallet:', result.accounts[0]);
       }
-
-      if (!walletAddress) {
-        throw new Error('No wallet address found');
-      }
-      
-      await performSiweAuth(walletAddress, signMessageAsync);
-      
-      window.location.reload();
     } catch (error) {
-      console.error('Authentication error:', error);
+      console.error('Wallet connection error:', error);
+    } finally {
       setIsLoading(false);
     }
   };
@@ -55,7 +36,7 @@ export function SignInForm() {
             Mini App Template
           </Typography>
           <Typography variant="body" className="text-gray-600">
-            Connect your Base Account to continue
+            Connect your wallet to continue
           </Typography>
         </div>
       </div>
@@ -64,7 +45,7 @@ export function SignInForm() {
           <div className="flex items-center justify-center space-x-3 py-4">
             <Spinner />
             <Typography variant="body" className="text-gray-600">
-              Authenticating...
+              Connecting...
             </Typography>
           </div>
         ) : 
@@ -72,7 +53,7 @@ export function SignInForm() {
           align="center"
           variant="solid"
           colorScheme="light"
-          onClick={handleSiweSignIn}
+          onClick={handleWalletConnect}
         />}
       </div>
     </div>
