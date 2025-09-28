@@ -1,9 +1,12 @@
 import { Typography } from "@worldcoin/mini-apps-ui-kit-react";
 import { OpenNewWindow } from "iconoir-react";
+import { FarcasterProfile } from "../farcaster-profile";
 
 export const HomeContent = () => {
   return (
     <div className="space-y-6">
+      <FarcasterProfile />
+      
       <div className="text-left space-y-3">
         <Typography variant="body" className="text-gray-600">
           Get started with these quick steps

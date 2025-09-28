@@ -1,8 +1,20 @@
 "use client";
 
-import { ReactNode, useEffect, useState } from "react";
+import { ReactNode, useEffect, useState, createContext, useContext } from "react";
 import { useAccount, useConnect } from "wagmi";
 import { sdk } from '@farcaster/miniapp-sdk';
+
+interface FarcasterContextType {
+  fid: number | null;
+  isInMiniApp: boolean;
+}
+
+const FarcasterContext = createContext<FarcasterContextType>({
+  fid: null,
+  isInMiniApp: false,
+});
+
+export const useFarcaster = () => useContext(FarcasterContext);
 
 interface AutoConnectWrapperProps {
   children: ReactNode;
@@ -13,12 +25,25 @@ export function AutoConnectWrapper({ children }: AutoConnectWrapperProps) {
   const { connectAsync, connectors } = useConnect();
   const [isInMiniApp, setIsInMiniApp] = useState(false);
   const [autoConnectAttempted, setAutoConnectAttempted] = useState(false);
+  const [fid, setFid] = useState<number | null>(null);
 
   useEffect(() => {
     const checkMiniApp = async () => {
       try {
         const inMiniApp = await sdk.isInMiniApp();
         setIsInMiniApp(inMiniApp);
+        
+        // Get FID from Farcaster context if available
+        if (inMiniApp) {
+          try {
+            const context = await sdk.context;
+            if (context?.user?.fid) {
+              setFid(context.user.fid);
+            }
+          } catch (error) {
+            console.log('Error getting Farcaster context:', error);
+          }
+        }
         
         // If we're in a mini app and not connected, try to auto-connect
         if (inMiniApp && !isConnected && !autoConnectAttempted) {
@@ -65,5 +90,9 @@ export function AutoConnectWrapper({ children }: AutoConnectWrapperProps) {
   }
 
   // Show the main app content
-  return <div>{children}</div>;
+  return (
+    <FarcasterContext.Provider value={{ fid, isInMiniApp }}>
+      <div>{children}</div>
+    </FarcasterContext.Provider>
+  );
 }

@@ -1,6 +1,7 @@
 import { Button, Typography, Chip } from "@worldcoin/mini-apps-ui-kit-react";
 import { Copy, LogOut, CheckCircle, Wallet, Network, CreditCard, User } from "iconoir-react";
 import { BasePay } from "../base-pay";
+import { FarcasterProfile } from "../farcaster-profile";
 
 interface SettingsContentProps {
   walletAddress: string;
@@ -14,11 +15,14 @@ interface SettingsContentProps {
 
 export const SettingsContent = ({ walletAddress, copied, onCopyAddress, onSignOut, userId, copiedUserId, onCopyUserId }: SettingsContentProps) => {
   return (
-    <div className="space-y-2">
-      <div className="space-y-1">
-        <Typography variant="subtitle" className="text-black mb-4">
-          Wallet Details
-        </Typography>
+    <div className="space-y-6">
+      <FarcasterProfile />
+      
+      <div className="space-y-2">
+        <div className="space-y-1">
+          <Typography variant="subtitle" className="text-black mb-4">
+            Wallet Details
+          </Typography>
         <div className="bg-gray-50 rounded-lg p-4 space-y-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3 flex-1 min-w-0">
@@ -88,6 +92,7 @@ export const SettingsContent = ({ walletAddress, copied, onCopyAddress, onSignOu
               <LogOut width={20} height={20} />
               <span>Sign Out</span>
             </Button>
+        </div>
         </div>
       </div>
     </div>
