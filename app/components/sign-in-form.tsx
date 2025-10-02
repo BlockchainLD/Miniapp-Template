@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { SignInWithBaseButton } from "@base-org/account-ui/react";
-import { useAccount, useConnect } from "wagmi";
+import { useConnect } from "wagmi";
 import { 
   Typography, 
   Spinner
@@ -10,17 +10,14 @@ import {
 
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { address, isConnected } = useAccount();
   const { connectAsync, connectors } = useConnect();
 
   const handleWalletConnect = async () => {
     setIsLoading(true);
     
     try {
-      if (!isConnected || !address) {
-        const result = await connectAsync({ connector: connectors[0] });
-        console.log('Connected to wallet:', result.accounts[0]);
-      }
+      const result = await connectAsync({ connector: connectors[0] });
+      console.log('Connected to wallet:', result.accounts[0]);
     } catch (error) {
       console.error('Wallet connection error:', error);
     } finally {

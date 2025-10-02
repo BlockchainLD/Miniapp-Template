@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { BasePayButton } from "@base-org/account-ui/react";
 import { useToast } from "@worldcoin/mini-apps-ui-kit-react";
 import { pay } from '@base-org/account';
