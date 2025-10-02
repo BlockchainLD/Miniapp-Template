@@ -7,6 +7,8 @@ An opinionated mini app template that makes it as simple as possible to build an
 ## Key Features
 - [Convex](https://www.convex.dev) integration that gives you an all-in-one backend to add anything to your app, plus authentication with [Better Auth](https://www.better-auth.com) and [Sign In With Base](https://docs.base.org/base-account/reference/ui-elements/sign-in-with-base-button)
 - [Farcaster Mini App SDK](https://miniapps.farcaster.xyz/docs/getting-started#manual-setup) support for compatibility across the [Base App](https://base.app) and [Farcaster](https://farcaster.xyz)
+- **Auto-connect functionality** - Automatically connects wallet when opened in Base App or Farcaster
+- **Farcaster profile integration** - Displays user profile data from Farcaster
 - Built-in support for Base products like [Base Pay](https://docs.base.org/base-account/guides/accept-payments)
 
 ## Tech Stack
@@ -21,19 +23,55 @@ An opinionated mini app template that makes it as simple as possible to build an
 
 ## Getting Started
 
-1. Install all dependencies: `bun install`
+1. **Install dependencies**: `bun install`
 
-2. Create a new `.env.local` file and fill in the necessary values: `cp .env.example .env.local`
-- `BETTER_AUTH_SECRET` - Generate a secret with `bunx @better-auth/cli@latest secret`
-- `SITE_URL` - Keep it as `http://localhost:3000` but make sure to change to your production URL(eg. on Vercel) when you deploy
-- `CONVEX_DEPLOYMENT`, `NEXT_PUBLIC_CONVEX_URL`, and `NEXT_PUBLIC_CONVEX_SITE_URL` should be values that you get when you run `bun run convex:dev` locally
+2. **Set up Convex backend**: Run `bunx convex dev` to create your Convex deployment and get environment variables
 
-3. Fill out `APP_METADATA` in `app/lib/utils.ts`
-- Most values should be straightforward(your title, app url, splash icon, etc) and aren't as necessary until you're ready to launch
-- To set up `accountAssociation` once you have a mini app URL, you can go to the Preview tool on [Base.dev](https://base.dev) which lets you sign the `accountAssociation` data needed for your manifest
-- For the `baseBuilder.allowedAddresses` array, replace the default `0x8342A48694A74044116F330db5050a267b28dD85` value with the Base Account address you want to use to view analytics for your mini app on Base.dev
+3. **Create environment file**: Create `.env.local` with the following variables:
+   ```bash
+   # Better Auth Secret - Generate with: bunx @better-auth/cli@latest secret
+   BETTER_AUTH_SECRET=your_secret_here
+   
+   # Site URL - Use http://localhost:3000 for local development
+   SITE_URL=http://localhost:3000
+   
+   # Convex Environment Variables - Get these from step 2
+   CONVEX_DEPLOYMENT=your_convex_deployment
+   NEXT_PUBLIC_CONVEX_URL=https://your-convex-deployment.convex.cloud
+   CONVEX_SITE_URL=https://your-convex-deployment.convex.cloud
+   
+   # Optional: World App ID for Worldcoin integration
+   NEXT_PUBLIC_WORLD_APP_ID=app_123456789
+   ```
 
-4. Run locally with `bun run dev`, or deploy to Vercel and then test either on Base.dev or directly in the Base App.
+4. **Configure app metadata**: Update `APP_METADATA` in `app/lib/utils.ts`:
+   - `title`: Your app name
+   - `description`: Your app description  
+   - `imageUrl`: Your app icon URL
+   - `splash.imageUrl`: Your splash screen image URL
+   - `url`: Your production URL (update when deploying)
+   - `baseBuilder.allowedAddresses`: Replace with your Base Account address for analytics
+
+5. **Run locally**: `bun run dev` (starts both Next.js and Convex)
+
+6. **Deploy to production**: Deploy to Vercel and update `SITE_URL` in your environment variables
+
+## Features
+
+### Auto-Connect Functionality
+- **Base App**: Automatically connects wallet when opened in Base App
+- **Farcaster**: Automatically connects wallet when opened in Farcaster  
+- **Web**: Manual wallet connection for web browsers
+
+### Farcaster Integration
+- **Profile Data**: Displays user profile information from Farcaster
+- **Avatar**: Shows user profile picture with proper image optimization
+- **Social Stats**: Displays follower/following counts
+- **Connected Accounts**: Shows linked social accounts
+
+### Base Pay Integration
+- **Payment Processing**: Built-in Base Pay for accepting payments
+- **Wallet Integration**: Seamless wallet connection and management
 
 ## Deploy on Vercel
 
